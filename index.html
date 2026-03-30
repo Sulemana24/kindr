@@ -1,0 +1,1208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
+    <title>HopeRise | Modern Crowdfunding for Everyone</title>
+    <!-- Font Awesome 6 -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <!-- Google Fonts: Modern Sans -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: #ffffff;
+        color: #1e1e2f;
+        overflow-x: hidden;
+      }
+
+      /* Modern Gradient Backgrounds */
+      .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      /* Navbar - Glassmorphism */
+      .navbar {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.8rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #3b82f6, #ec489a);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .logo i {
+        background: linear-gradient(135deg, #3b82f6, #ec489a);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-size: 2rem;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .nav-btn {
+        padding: 0.6rem 1.3rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #f3f4f6;
+        color: #1f2937;
+      }
+
+      .nav-btn-primary {
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        color: white;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      }
+
+      .nav-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+      }
+
+      .nav-btn-outline {
+        background: transparent;
+        border: 2px solid #e5e7eb;
+      }
+
+      .nav-btn-outline:hover {
+        border-color: #3b82f6;
+        background: rgba(59, 130, 246, 0.05);
+      }
+
+      .user-badge {
+        background: linear-gradient(135deg, #f3f4f6, #ffffff);
+        padding: 0.5rem 1.2rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid #e5e7eb;
+      }
+
+      /* Hero Section - Modern & Bold */
+      .hero-modern {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 1rem 2rem 2rem 2rem;
+        border-radius: 2rem;
+        padding: 3rem 2.5rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-modern::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 80%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      .hero-content {
+        max-width: 600px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .hero-content h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+      }
+
+      .hero-content p {
+        font-size: 1.1rem;
+        opacity: 0.95;
+        margin-bottom: 2rem;
+      }
+
+      .stats-row {
+        display: flex;
+        gap: 2rem;
+        margin-top: 1rem;
+      }
+
+      .stat-modern {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 0.8rem 1.5rem;
+        border-radius: 1rem;
+        text-align: center;
+      }
+
+      .stat-number-modern {
+        font-size: 1.8rem;
+        font-weight: 800;
+      }
+
+      /* Main Container */
+      .main-container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+      }
+
+      /* Header Row */
+      .header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 2rem 0 2rem 0;
+      }
+
+      .header-row h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #1f2937, #3b82f6);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .btn-create-modern {
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        color: white;
+        padding: 0.9rem 1.8rem;
+        border: none;
+        border-radius: 60px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        font-size: 1rem;
+      }
+
+      .btn-create-modern:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 28px rgba(59, 130, 246, 0.4);
+      }
+
+      /* Campaign Cards - Modern, Vibrant */
+      .campaigns-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 2rem;
+        margin-top: 1rem;
+      }
+
+      .campaign-card-modern {
+        background: white;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        cursor: pointer;
+        border: 1px solid #f0f0f0;
+      }
+
+      .campaign-card-modern:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 25px 40px rgba(0, 0, 0, 0.12);
+      }
+
+      .card-image-modern {
+        height: 200px;
+        background: linear-gradient(145deg, #d9e6ff, #c7d9ff);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        position: relative;
+      }
+
+      .campaign-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        padding: 5px 12px;
+        border-radius: 30px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: white;
+      }
+
+      .card-content-modern {
+        padding: 1.5rem;
+      }
+
+      .campaign-title-modern {
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: #111827;
+      }
+
+      .campaign-desc-modern {
+        color: #6b7280;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        margin: 0.75rem 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .progress-modern {
+        margin: 1.2rem 0 0.8rem;
+      }
+
+      .progress-bar-modern {
+        background: #f3f4f6;
+        border-radius: 30px;
+        height: 10px;
+        overflow: hidden;
+      }
+
+      .progress-fill-modern {
+        background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+        width: 0%;
+        height: 100%;
+        border-radius: 30px;
+        transition: width 0.5s ease;
+      }
+
+      .fund-stats-modern {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin-top: 0.6rem;
+      }
+
+      .raised {
+        color: #3b82f6;
+      }
+
+      .goal {
+        color: #6b7280;
+      }
+
+      .card-buttons-modern {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.3rem;
+      }
+
+      .btn-donate-modern,
+      .btn-share-modern {
+        flex: 1;
+        padding: 0.7rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-donate-modern {
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        color: white;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+      }
+
+      .btn-donate-modern:hover {
+        transform: scale(1.02);
+        box-shadow: 0 6px 14px rgba(59, 130, 246, 0.4);
+      }
+
+      .btn-share-modern {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        color: #374151;
+      }
+
+      .btn-share-modern:hover {
+        background: #f3f4f6;
+        border-color: #3b82f6;
+      }
+
+      /* Profile Card Modern */
+      .profile-card-modern {
+        background: linear-gradient(135deg, #ffffff, #fef9ff);
+        border-radius: 1.5rem;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #eef2ff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      }
+
+      .profile-info-modern h4 {
+        font-size: 1.2rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      /* Footer */
+      .footer-modern {
+        background: #0f172a;
+        color: #cbd5e1;
+        padding: 3rem 2rem 1.5rem;
+        margin-top: 4rem;
+      }
+
+      .footer-grid {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+      }
+
+      .footer-col-modern h4 {
+        color: white;
+        margin-bottom: 1rem;
+        font-weight: 700;
+      }
+
+      .social-icons-modern {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .social-icons-modern i {
+        font-size: 1.4rem;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+
+      .social-icons-modern i:hover {
+        color: #3b82f6;
+      }
+
+      .copyright-modern {
+        text-align: center;
+        border-top: 1px solid #1e293b;
+        padding-top: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      /* Modals */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        backdrop-filter: blur(8px);
+      }
+
+      .modal-card-modern {
+        background: white;
+        max-width: 480px;
+        width: 90%;
+        border-radius: 2rem;
+        padding: 2rem;
+        animation: modalSlideIn 0.3s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .modal-card-modern h3 {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+      }
+
+      .modal-card-modern input,
+      .modal-card-modern textarea {
+        width: 100%;
+        padding: 0.9rem;
+        margin: 0.6rem 0 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 1rem;
+        font-family: inherit;
+        transition: border 0.2s;
+      }
+
+      .modal-card-modern input:focus,
+      .modal-card-modern textarea:focus {
+        outline: none;
+        border-color: #3b82f6;
+      }
+
+      .toast-modern {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1f2937;
+        color: white;
+        padding: 0.8rem 1.8rem;
+        border-radius: 60px;
+        font-size: 0.9rem;
+        z-index: 2500;
+        opacity: 0;
+        transition: opacity 0.2s;
+        pointer-events: none;
+        font-weight: 500;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      @media (max-width: 768px) {
+        .hero-modern {
+          margin: 1rem;
+          padding: 2rem;
+        }
+        .hero-content h1 {
+          font-size: 2rem;
+        }
+        .header-row h2 {
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Modern Navbar -->
+    <nav class="navbar">
+      <div class="logo">
+        <i class="fas fa-hands-helping"></i>
+        <span>HopeRise</span>
+      </div>
+      <div class="nav-links" id="navLinksContainer"></div>
+    </nav>
+
+    <!-- Hero Section - Modern -->
+    <div class="hero-modern">
+      <div class="hero-content">
+        <h1>Bring ideas to life,<br />one donation at a time</h1>
+        <p>
+          Join thousands of supporters empowering creators worldwide.
+          <strong>❤️ Anyone can donate — no account needed!</strong>
+        </p>
+        <div class="stats-row">
+          <div class="stat-modern">
+            <div class="stat-number-modern">$3.2M+</div>
+            <div>Raised</div>
+          </div>
+          <div class="stat-modern">
+            <div class="stat-number-modern">2.5k+</div>
+            <div>Campaigns</div>
+          </div>
+          <div class="stat-modern">
+            <div class="stat-number-modern">15k+</div>
+            <div>Supporters</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main class="main-container">
+      <!-- Profile Panel -->
+      <div id="profilePanel" style="display: none" class="profile-card-modern">
+        <div class="profile-info-modern">
+          <h4>
+            <i class="fas fa-user-circle" style="color: #3b82f6"></i>
+            <span id="profileNameDisplay"></span>
+          </h4>
+          <div
+            class="profile-bio"
+            id="profileBioDisplay"
+            style="color: #6b7280; margin-top: 5px"
+          ></div>
+          <small
+            ><i class="fas fa-envelope"></i>
+            <span id="profileEmailDisplay"></span
+          ></small>
+        </div>
+        <button id="editProfileBtn" class="nav-btn nav-btn-outline">
+          <i class="fas fa-pen"></i> Edit Profile
+        </button>
+      </div>
+
+      <div class="header-row">
+        <h2>
+          <i class="fas fa-fire" style="color: #f97316"></i> Trending Campaigns
+        </h2>
+        <button id="createCampaignBtnGlobal" class="btn-create-modern">
+          <i class="fas fa-plus-circle"></i> Start a Campaign
+        </button>
+      </div>
+
+      <div id="campaignsContainer" class="campaigns-grid"></div>
+    </main>
+
+    <!-- Modern Footer -->
+    <footer class="footer-modern">
+      <div class="footer-grid">
+        <div class="footer-col-modern">
+          <h4><i class="fas fa-hand-holding-heart"></i> HopeRise</h4>
+          <p>Empowering dreamers since 2025</p>
+          <div class="social-icons-modern">
+            <i class="fab fa-twitter"></i>
+            <i class="fab fa-instagram"></i>
+            <i class="fab fa-facebook"></i>
+            <i class="fab fa-linkedin"></i>
+          </div>
+        </div>
+        <div class="footer-col-modern">
+          <h4>Explore</h4>
+          <p><i class="fas fa-chart-line"></i> Discover</p>
+          <p><i class="fas fa-lightbulb"></i> How it works</p>
+          <p><i class="fas fa-question-circle"></i> FAQ</p>
+        </div>
+        <div class="footer-col-modern">
+          <h4>Support</h4>
+          <p><i class="fas fa-envelope"></i> Contact</p>
+          <p><i class="fas fa-shield-alt"></i> Trust & Safety</p>
+        </div>
+      </div>
+      <div class="copyright-modern">
+        <i class="far fa-copyright"></i> 2025 HopeRise — Modern crowdfunding for
+        everyone
+      </div>
+    </footer>
+
+    <!-- Modals -->
+    <div id="signupModal" class="modal">
+      <div class="modal-card-modern">
+        <h3><i class="fas fa-user-plus"></i> Join HopeRise</h3>
+        <input type="text" id="signupName" placeholder="Full name" /><input
+          type="email"
+          id="signupEmail"
+          placeholder="Email"
+        /><input type="tel" id="signupPhone" placeholder="Phone" /><input
+          type="password"
+          id="signupPassword"
+          placeholder="Password"
+        /><textarea
+          id="signupBio"
+          rows="2"
+          placeholder="Tell us about yourself"
+        ></textarea
+        ><button id="doSignupBtn" class="btn-create-modern" style="width: 100%">
+          Sign Up Free
+        </button>
+        <p style="text-align: center; margin-top: 1rem">
+          Already have an account?
+          <a href="#" id="switchToLogin" style="color: #3b82f6">Log in</a>
+        </p>
+      </div>
+    </div>
+
+    <div id="loginModal" class="modal">
+      <div class="modal-card-modern">
+        <h3><i class="fas fa-sign-in-alt"></i> Welcome back</h3>
+        <input type="email" id="loginEmail" placeholder="Email" /><input
+          type="password"
+          id="loginPassword"
+          placeholder="Password"
+        /><button id="doLoginBtn" class="btn-create-modern" style="width: 100%">
+          Log in
+        </button>
+        <p style="margin-top: 1rem">
+          <a href="#" id="forgotPasswordLink" style="color: #3b82f6"
+            >Forgot password?</a
+          >
+        </p>
+        <p>
+          <a href="#" id="switchToSignup" style="color: #3b82f6"
+            >New here? Sign up</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <div id="resetModal" class="modal">
+      <div class="modal-card-modern">
+        <h3><i class="fas fa-key"></i> Reset password</h3>
+        <p style="margin-bottom: 1rem">Enter your email to reset (demo)</p>
+        <input type="email" id="resetEmail" placeholder="Your email" /><button
+          id="doResetBtn"
+          class="btn-create-modern"
+        >
+          Send reset link
+        </button>
+        <p>
+          <a href="#" id="backToLoginFromReset" style="color: #3b82f6"
+            >Back to login</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <div id="editProfileModal" class="modal">
+      <div class="modal-card-modern">
+        <h3><i class="fas fa-user-edit"></i> Edit Profile</h3>
+        <input type="text" id="editProfileName" placeholder="Name" /><textarea
+          id="editProfileBio"
+          rows="3"
+          placeholder="Your bio"
+        ></textarea
+        ><button id="saveProfileBtn" class="btn-create-modern">
+          Save Changes
+        </button>
+      </div>
+    </div>
+
+    <div id="createCampaignModal" class="modal">
+      <div class="modal-card-modern">
+        <h3><i class="fas fa-bullhorn"></i> Launch Your Dream</h3>
+        <p style="font-size: 0.85rem; color: #3b82f6; margin-bottom: 1rem">
+          <i class="fas fa-lock"></i> You need an account to create campaigns
+        </p>
+        <input
+          type="text"
+          id="campaignTitle"
+          placeholder="Campaign title"
+        /><textarea
+          id="campaignDesc"
+          rows="2"
+          placeholder="Short description"
+        ></textarea
+        ><input
+          type="number"
+          id="campaignGoal"
+          placeholder="Goal amount (USD)"
+          value="5000"
+        /><button
+          id="submitCampaignBtn"
+          class="btn-create-modern"
+          style="width: 100%"
+        >
+          Launch Campaign
+        </button>
+      </div>
+    </div>
+
+    <div id="donateModal" class="modal">
+      <div class="modal-card-modern">
+        <h3>
+          <i class="fas fa-heart" style="color: #ef4444"></i> Support This Cause
+        </h3>
+        <p
+          id="donateCampaignTitle"
+          style="font-weight: bold; margin: 0.5rem 0"
+        ></p>
+        <p style="font-size: 0.85rem; color: #6b7280">
+          <i class="fas fa-globe"></i> No account needed — donate instantly!
+        </p>
+        <input
+          type="number"
+          id="donateAmount"
+          placeholder="Amount (USD)"
+          value="25"
+        /><button
+          id="confirmDonateBtn"
+          class="btn-create-modern"
+          style="
+            width: 100%;
+            background: linear-gradient(135deg, #ef4444, #f97316);
+          "
+        >
+          Confirm Donation
+        </button>
+      </div>
+    </div>
+
+    <div id="toastMsg" class="toast-modern"></div>
+
+    <script>
+      // Data Models
+      let users = [];
+      let sessions = { currentUserId: null };
+      let campaigns = [];
+
+      function showToast(msg, isError = false) {
+        const toast = document.getElementById("toastMsg");
+        toast.textContent = msg;
+        toast.style.backgroundColor = isError ? "#dc2626" : "#10b981";
+        toast.style.opacity = "1";
+        setTimeout(() => {
+          toast.style.opacity = "0";
+        }, 2800);
+      }
+
+      function seedData() {
+        if (users.length === 0) {
+          users.push({
+            id: "u1",
+            name: "Emma Rivera",
+            email: "emma@hoperise.com",
+            phone: "",
+            password: "emma123",
+            bio: "Creative director & community builder. Passionate about making impact.",
+          });
+          users.push({
+            id: "u2",
+            name: "Marcus Chen",
+            email: "marcus@hoperise.com",
+            phone: "",
+            password: "marcus123",
+            bio: "Tech entrepreneur helping creators scale their impact globally.",
+          });
+        }
+        if (campaigns.length === 0) {
+          campaigns.push({
+            id: "c1",
+            creatorId: "u1",
+            title: "Clean Water for 5,000 Families",
+            description:
+              "Install water filtration systems in rural communities, providing safe drinking water.",
+            goal: 25000,
+            raised: 18450,
+            icon: "💧",
+            category: "Environment",
+          });
+          campaigns.push({
+            id: "c2",
+            creatorId: "u2",
+            title: "AI Education for Underserved Youth",
+            description:
+              "Build an AI-powered learning platform to help kids in low-income areas access quality education.",
+            goal: 35000,
+            raised: 22400,
+            icon: "🤖",
+            category: "Education",
+          });
+          campaigns.push({
+            id: "c3",
+            creatorId: "u1",
+            title: "Urban Community Gardens",
+            description:
+              "Transform empty lots into vibrant community gardens that grow fresh food.",
+            goal: 12000,
+            raised: 8900,
+            icon: "🌱",
+            category: "Food",
+          });
+          campaigns.push({
+            id: "c4",
+            creatorId: "u2",
+            title: "Documentary: Ocean's Voice",
+            description:
+              "A powerful documentary exploring marine conservation and climate impact.",
+            goal: 22000,
+            raised: 15750,
+            icon: "🎬",
+            category: "Media",
+          });
+        }
+      }
+
+      function getCurrentUser() {
+        return users.find((u) => u.id === sessions.currentUserId);
+      }
+      function isLoggedIn() {
+        return sessions.currentUserId !== null;
+      }
+
+      function registerUser(name, email, phone, password, bio) {
+        if (!name || !email || !password) {
+          showToast("Name, email & password required", true);
+          return false;
+        }
+        if (users.find((u) => u.email === email)) {
+          showToast("Email already exists", true);
+          return false;
+        }
+        const newId = "u" + Date.now() + Math.random();
+        users.push({
+          id: newId,
+          name,
+          email,
+          phone: phone || "",
+          password,
+          bio: bio || "",
+        });
+        showToast("Account created! Please login.");
+        return true;
+      }
+
+      function loginUser(email, password) {
+        const user = users.find(
+          (u) => u.email === email && u.password === password,
+        );
+        if (!user) {
+          showToast("Invalid credentials", true);
+          return false;
+        }
+        sessions.currentUserId = user.id;
+        showToast(`Welcome back, ${user.name}! ✨`);
+        renderNavProfile();
+        renderCampaigns();
+        return true;
+      }
+
+      function logout() {
+        sessions.currentUserId = null;
+        renderNavProfile();
+        renderCampaigns();
+        showToast("Logged out safely");
+      }
+      function resetPassword(email) {
+        const user = users.find((u) => u.email === email);
+        if (!user) {
+          showToast("Email not found", true);
+          return false;
+        }
+        user.password = "newPass123";
+        showToast("Password reset! Temporary password: newPass123");
+        return true;
+      }
+      function updateProfile(name, bio) {
+        const u = getCurrentUser();
+        if (u) {
+          if (name) u.name = name;
+          if (bio !== undefined) u.bio = bio;
+          showToast("Profile updated! 🎉");
+          renderNavProfile();
+        }
+      }
+
+      // Create campaign: requires login
+      function addCampaign(title, desc, goal) {
+        if (!isLoggedIn()) {
+          showToast("Please login to create a campaign", true);
+          return false;
+        }
+        if (!title || !desc || goal <= 0) {
+          showToast("Valid fields required", true);
+          return false;
+        }
+        campaigns.unshift({
+          id: "camp_" + Date.now(),
+          creatorId: sessions.currentUserId,
+          title,
+          description: desc,
+          goal: Number(goal),
+          raised: 0,
+          icon: "✨",
+          category: "New",
+        });
+        showToast("Campaign launched! 🚀 Start sharing your story.");
+        renderCampaigns();
+        return true;
+      }
+
+      // Donate: anyone can donate, no login needed
+      function donateToCampaign(campId, amount) {
+        const camp = campaigns.find((c) => c.id === campId);
+        if (!camp) return false;
+        let val = Number(amount);
+        if (isNaN(val) || val <= 0) {
+          showToast("Valid amount needed", true);
+          return false;
+        }
+        camp.raised = Math.min(camp.raised + val, camp.goal);
+        showToast(
+          `❤️ Thank you for donating $${val} to "${camp.title}"! You're making a difference.`,
+        );
+        renderCampaigns();
+        return true;
+      }
+
+      function shareCampaign(campaign) {
+        const shareUrl = window.location.href + `?ref=${campaign.id}`;
+        if (navigator.share)
+          navigator
+            .share({
+              title: campaign.title,
+              text: campaign.description,
+              url: shareUrl,
+            })
+            .catch(() => copyShare(shareUrl));
+        else copyShare(shareUrl);
+      }
+      function copyShare(text) {
+        navigator.clipboard.writeText(text);
+        showToast("🔗 Link copied! Share on social media.");
+      }
+
+      function renderCampaigns() {
+        const container = document.getElementById("campaignsContainer");
+        if (!container) return;
+        if (campaigns.length === 0) {
+          container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:3rem;">✨ No campaigns yet. Be the first to create one!</div>`;
+          return;
+        }
+        const currentUser = getCurrentUser();
+        container.innerHTML = campaigns
+          .map((c) => {
+            let percent = (c.raised / c.goal) * 100;
+            return `<div class="campaign-card-modern">
+        <div class="card-image-modern"><span class="campaign-badge"><i class="fas fa-tag"></i> ${c.category || "Cause"}</span>${c.icon || "🚀"}</div>
+        <div class="card-content-modern">
+          <div class="campaign-title-modern">${escapeHtml(c.title)}</div>
+          <div class="campaign-desc-modern">${escapeHtml(c.description)}</div>
+          <div class="progress-modern"><div class="progress-bar-modern"><div class="progress-fill-modern" style="width:${Math.min(percent, 100)}%"></div></div><div class="fund-stats-modern"><span class="raised"><i class="fas fa-dollar-sign"></i> ${c.raised.toLocaleString()}</span><span class="goal">Goal $${c.goal.toLocaleString()}</span><span>${Math.floor(percent)}%</span></div></div>
+          <div class="card-buttons-modern"><button class="btn-donate-modern donate-btn" data-id="${c.id}"><i class="fas fa-heart"></i> Donate</button><button class="btn-share-modern share-btn" data-id="${c.id}"><i class="fas fa-share-alt"></i> Share</button></div>
+          ${currentUser && c.creatorId === currentUser.id ? '<div style="font-size:0.7rem; margin-top:8px; color:#8b5cf6;"><i class="fas fa-crown"></i> Your campaign</div>' : ""}
+        </div></div>`;
+          })
+          .join("");
+        document.querySelectorAll(".donate-btn").forEach((btn) =>
+          btn.addEventListener("click", (e) => {
+            let id = btn.getAttribute("data-id");
+            openDonateModal(id);
+          }),
+        );
+        document.querySelectorAll(".share-btn").forEach((btn) =>
+          btn.addEventListener("click", (e) => {
+            let id = btn.getAttribute("data-id");
+            let c = campaigns.find((ca) => ca.id === id);
+            if (c) shareCampaign(c);
+          }),
+        );
+      }
+
+      function openDonateModal(cid) {
+        window.currentDonateId = cid;
+        let camp = campaigns.find((c) => c.id === cid);
+        if (camp)
+          document.getElementById("donateCampaignTitle").innerText = camp.title;
+        document.getElementById("donateModal").style.display = "flex";
+      }
+
+      function renderNavProfile() {
+        const navDiv = document.getElementById("navLinksContainer");
+        const profileDiv = document.getElementById("profilePanel");
+        if (isLoggedIn()) {
+          let u = getCurrentUser();
+          navDiv.innerHTML = `<div class="user-badge"><i class="fas fa-user-astronaut"></i> ${escapeHtml(u.name)}</div><button id="logoutNavBtn" class="nav-btn nav-btn-outline"><i class="fas fa-sign-out-alt"></i> Logout</button>`;
+          if (profileDiv) {
+            profileDiv.style.display = "flex";
+            document.getElementById("profileNameDisplay").innerHTML =
+              escapeHtml(u.name);
+            document.getElementById("profileBioDisplay").innerText =
+              u.bio || "No bio yet — share your story!";
+            document.getElementById("profileEmailDisplay").innerText = u.email;
+          }
+          document
+            .getElementById("logoutNavBtn")
+            ?.addEventListener("click", logout);
+        } else {
+          navDiv.innerHTML = `<button id="showSignupBtn" class="nav-btn nav-btn-outline"><i class="fas fa-user-plus"></i> Sign up</button><button id="showLoginBtn" class="nav-btn nav-btn-primary"><i class="fas fa-key"></i> Login</button>`;
+          if (profileDiv) profileDiv.style.display = "none";
+          document
+            .getElementById("showSignupBtn")
+            ?.addEventListener("click", () => openModal("signupModal"));
+          document
+            .getElementById("showLoginBtn")
+            ?.addEventListener("click", () => openModal("loginModal"));
+        }
+      }
+
+      function openModal(id) {
+        document.getElementById(id).style.display = "flex";
+      }
+      function closeModals() {
+        document
+          .querySelectorAll(".modal")
+          .forEach((m) => (m.style.display = "none"));
+      }
+
+      function bindEvents() {
+        document
+          .getElementById("createCampaignBtnGlobal")
+          ?.addEventListener("click", () => {
+            if (!isLoggedIn()) {
+              showToast("Please login or sign up to create a campaign", true);
+              openModal("loginModal");
+              return;
+            }
+            openModal("createCampaignModal");
+          });
+        document
+          .getElementById("submitCampaignBtn")
+          ?.addEventListener("click", () => {
+            if (!isLoggedIn()) {
+              showToast("Login required", true);
+              closeModals();
+              return;
+            }
+            let t = document.getElementById("campaignTitle").value,
+              d = document.getElementById("campaignDesc").value,
+              g = document.getElementById("campaignGoal").value;
+            if (addCampaign(t, d, g)) closeModals();
+          });
+        document
+          .getElementById("confirmDonateBtn")
+          ?.addEventListener("click", () => {
+            let amt = document.getElementById("donateAmount").value;
+            if (
+              window.currentDonateId &&
+              donateToCampaign(window.currentDonateId, amt)
+            )
+              closeModals();
+          });
+        document
+          .getElementById("doSignupBtn")
+          ?.addEventListener("click", () => {
+            let n = document.getElementById("signupName").value,
+              e = document.getElementById("signupEmail").value,
+              p = document.getElementById("signupPhone").value,
+              pw = document.getElementById("signupPassword").value,
+              b = document.getElementById("signupBio").value;
+            if (registerUser(n, e, p, pw, b)) closeModals();
+          });
+        document.getElementById("doLoginBtn")?.addEventListener("click", () => {
+          let e = document.getElementById("loginEmail").value,
+            p = document.getElementById("loginPassword").value;
+          if (loginUser(e, p)) closeModals();
+        });
+        document
+          .getElementById("forgotPasswordLink")
+          ?.addEventListener("click", (e) => {
+            e.preventDefault();
+            closeModals();
+            openModal("resetModal");
+          });
+        document.getElementById("doResetBtn")?.addEventListener("click", () => {
+          let em = document.getElementById("resetEmail").value;
+          if (resetPassword(em)) closeModals();
+        });
+        document
+          .getElementById("editProfileBtn")
+          ?.addEventListener("click", () => {
+            let u = getCurrentUser();
+            if (u) {
+              document.getElementById("editProfileName").value = u.name;
+              document.getElementById("editProfileBio").value = u.bio || "";
+              openModal("editProfileModal");
+            }
+          });
+        document
+          .getElementById("saveProfileBtn")
+          ?.addEventListener("click", () => {
+            let nm = document.getElementById("editProfileName").value,
+              bio = document.getElementById("editProfileBio").value;
+            updateProfile(nm, bio);
+            closeModals();
+          });
+        document
+          .getElementById("switchToLogin")
+          ?.addEventListener("click", (e) => {
+            e.preventDefault();
+            closeModals();
+            openModal("loginModal");
+          });
+        document
+          .getElementById("switchToSignup")
+          ?.addEventListener("click", (e) => {
+            e.preventDefault();
+            closeModals();
+            openModal("signupModal");
+          });
+        document
+          .getElementById("backToLoginFromReset")
+          ?.addEventListener("click", (e) => {
+            e.preventDefault();
+            closeModals();
+            openModal("loginModal");
+          });
+        window.onclick = (e) => {
+          if (e.target.classList && e.target.classList.contains("modal"))
+            closeModals();
+        };
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function (m) {
+          if (m === "&") return "&amp;";
+          if (m === "<") return "&lt;";
+          if (m === ">") return "&gt;";
+          return m;
+        });
+      }
+      function init() {
+        seedData();
+        renderNavProfile();
+        renderCampaigns();
+        bindEvents();
+      }
+      init();
+    </script>
+  </body>
+</html>
