@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="description"
+      content="Kindr is a crowdfunding platform dedicated to supporting charitable causes and social impact projects. Join us in making a difference by funding campaigns that matter."
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/Assets/logo.png" />
+    <title>Kindr — Kindness in Action</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav id="navbar">
+      <div class="nav-brand">
+        <img src="/Assets/logo.png" alt="Kindr logo" class="logo-img" />
+        <a href="#" class="nav-logo">kindr<span>.</span></a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#campaigns">Explore</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#">Stories</a></li>
+        <li><a href="#">About</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="btn btn-ghost" onclick="openModal('signinModal')">
+          Sign in
+        </button>
+        <button class="btn btn-primary" onclick="openModal('campaignModal')">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Start a campaign
+        </button>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#campaigns">Explore campaigns</a>
+      <a href="#how">How it works</a>
+      <a href="#">Success stories</a>
+      <a href="#">About us</a>
+      <button class="btn btn-ghost" onclick="openModal('signinModal')">
+        Sign in
+      </button>
+      <button class="btn btn-primary" onclick="openModal('campaignModal')">
+        Start a campaign
+      </button>
+    </div>
+
+    <section class="page">
+      <h1>Contact Us</h1>
+      <p>Email: support@kindr.com</p>
+      <p>Phone: +233 XXX XXX XXX</p>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="foot-brand">
+            <img src="/Assets/logo.png" alt="Kindr logo" class="logo-img" />
+            <a href="#" class="nav-logo">kindr<span>.</span></a>
+          </div>
+          <p>
+            Connecting people who care with causes that matter. Every
+            contribution, big or small, creates ripples of change in the world.
+          </p>
+          <div class="footer-social">
+            <button class="social-btn">𝕏</button>
+            <button class="social-btn">in</button>
+            <button class="social-btn">f</button>
+            <button class="social-btn">▶</button>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="#">Explore causes</a></li>
+            <li><a href="#">How it works</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="about.html">About Kindr</a></li>
+            <li><a href="careers.html">Careers</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="help.html">Help center</a></li>
+            <li><a href="trust.html">Trust & safety</a></li>
+            <li><a href="faq.html">Donor FAQ</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span
+          >© <span id="year"></span> Kindr Technologies Ltd. All rights
+          reserved.</span
+        >
+        <div class="footer-links">
+          <a href="privacy.html">Privacy policy</a>
+          <a href="terms.html">Terms of service</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
