@@ -162,8 +162,8 @@ function renderCards(data) {
         </div>
       </div>
       <div class="card-footer">
-        <button class="btn-donate" onclick="openModal('donateModal')">Donate now</button>
-         <button class="btn btn-ghost report-btn" onclick="reportCampaign('${campaigns.title}')">
+        <button class="btn-donate" <button class="btn-donate" onclick="openDonateModal('${c.title}')">Donate now</button>
+         <button class="btn btn-ghost report-btn" onclick="reportCampaign('${c.title}')"
   Report
 </button>
         
@@ -225,8 +225,24 @@ window.addEventListener("scroll", () => {
 });
 
 // ── HAMBURGER ──
-document.getElementById("hamburger").addEventListener("click", () => {
-  document.getElementById("mobileMenu").classList.toggle("open");
+const hamburger = document.getElementById("hamburger");
+const mobileMenu = document.getElementById("mobileMenu");
+
+hamburger.addEventListener("click", () => {
+  mobileMenu.classList.toggle("active");
+});
+
+// ✅ Auto close when resizing to desktop
+window.addEventListener("resize", () => {
+  if (window.innerWidth >= 768) {
+    mobileMenu.classList.remove("active");
+  }
+});
+
+document.querySelectorAll(".mobile-menu a").forEach((link) => {
+  link.addEventListener("click", () => {
+    mobileMenu.classList.remove("active");
+  });
 });
 
 // ── INIT ──

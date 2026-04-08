@@ -40,6 +40,26 @@ body {
   overflow-x: hidden;
 }
 
+/* ── FONT AWESOME FIX ── */
+i[class^="fa"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn i {
+  font-size: 0.9em;
+}
+
+.trust-item i {
+  font-size: 0.95rem;
+}
+
+.step-icon i {
+  font-size: 1.1rem;
+  color: #fff;
+}
+
 /* ── NAVBAR ── */
 nav {
   position: fixed;
@@ -60,6 +80,10 @@ nav {
 
 nav.scrolled {
   box-shadow: var(--shadow);
+}
+
+a {
+  text-decoration: none;
 }
 
 .nav-logo {
@@ -757,7 +781,7 @@ section {
   align-items: center;
   gap: 8px;
 }
-.trust-item svg {
+.trust-item i {
   opacity: 0.9;
 }
 
@@ -821,9 +845,20 @@ footer {
   cursor: pointer;
   border: none;
 }
+
+.social-btn i {
+  font-size: 0.95rem;
+}
+
 .social-btn:hover {
   background: var(--pink-600);
   color: #fff;
+  transform: translateY(-2px);
+}
+
+.btn:hover i {
+  transform: translateX(2px);
+  transition: transform 0.2s;
 }
 
 .footer-col h4 {
@@ -898,7 +933,7 @@ footer {
     transform: translateY(0);
   }
 }
-.mobile-menu.open {
+.mobile-menu.active {
   display: flex;
 }
 .mobile-menu a {
@@ -1202,5 +1237,33 @@ textarea.modal-input {
 
   .page h1 {
     font-size: 2rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .modal-content {
+    margin: 20% auto;
+    width: 94%;
+    padding: 20px 16px;
+    border-radius: 12px;
+  }
+
+  .modal-content h2 {
+    font-size: 1.3rem;
+  }
+
+  .modal-input {
+    font-size: 0.85rem;
+    padding: 10px 12px;
+  }
+
+  .modal-content .btn {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  .close {
+    top: 10px;
+    right: 12px;
   }
 }

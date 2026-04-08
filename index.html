@@ -8,6 +8,10 @@
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/Assets/logo.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
     <title>Kindr — Kindness in Action</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap"
@@ -33,17 +37,7 @@
           Sign in
         </button>
         <button class="btn btn-primary" onclick="openModal('campaignModal')">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-          >
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
+          <i class="fa-solid fa-plus"></i>
           Start a campaign
         </button>
       </div>
@@ -62,6 +56,7 @@
         Sign in
       </button>
       <button class="btn btn-primary" onclick="openModal('campaignModal')">
+        <i class="fa-solid fa-plus"></i>
         Start a campaign
       </button>
     </div>
@@ -87,17 +82,7 @@
             "
           >
             Explore campaigns
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
+            <i class="fa-solid fa-arrow-right"></i>
           </button>
           <button
             class="btn btn-ghost btn-large"
@@ -145,74 +130,24 @@
     <!-- TRUST BANNER -->
     <div class="trust-section">
       <div class="trust-item">
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        </svg>
+        <i class="fa-solid fa-shield-halved"></i>
         Secure payments
       </div>
       <div class="trust-item">
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
+        <i class="fa-solid fa-check"></i>
         Verified campaigns
       </div>
       <div class="trust-item">
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <polyline points="12 6 12 12 16 14" />
-        </svg>
+        <i class="fa-solid fa-clock"></i>
         Real-time tracking
       </div>
       <div class="trust-item">
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
+        <i class="fa-solid fa-users"></i>
         430K+ donors
       </div>
       <div class="trust-item">
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <line x1="12" y1="1" x2="12" y2="23" />
-          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-        </svg>
-        0% platform fee
+        <i class="fa-solid fa-coins"></i>
+        7% platform fee
       </div>
     </div>
 
@@ -235,28 +170,28 @@
       </div>
       <div class="categories-grid" id="catGrid">
         <button class="cat-chip active" onclick="filterCat(this, 'all')">
-          🌍 All campaigns
+          <i class="fa-solid fa-globe"></i> All campaigns
         </button>
         <button class="cat-chip" onclick="filterCat(this, 'education')">
-          📚 Education
+          <i class="fa-solid fa-book"></i> Education
         </button>
         <button class="cat-chip" onclick="filterCat(this, 'health')">
-          💊 Health & Medical
+          <i class="fa-solid fa-heart-pulse"></i> Health & Medical
         </button>
         <button class="cat-chip" onclick="filterCat(this, 'environment')">
-          🌱 Environment
+          <i class="fa-solid fa-leaf"></i> Environment
         </button>
         <button class="cat-chip" onclick="filterCat(this, 'community')">
-          🏘 Community
+          <i class="fa-solid fa-people-group"></i> Community
         </button>
         <button class="cat-chip" onclick="filterCat(this, 'arts')">
-          🎨 Arts & Culture
+          <i class="fa-solid fa-palette"></i> Arts & Culture
         </button>
         <button class="cat-chip" onclick="filterCat(this, 'animals')">
-          🐾 Animals
+          <i class="fa-solid fa-paw"></i> Animals
         </button>
         <button class="cat-chip" onclick="filterCat(this, 'emergency')">
-          🚨 Emergency
+          <i class="fa-solid fa-triangle-exclamation"></i> Emergency
         </button>
       </div>
     </section>
@@ -272,7 +207,9 @@
             moves you.
           </p>
         </div>
-        <button class="btn btn-ghost">View all campaigns →</button>
+        <button class="btn btn-ghost">
+          View all campaigns <i class="fa-solid fa-arrow-right"></i>
+        </button>
       </div>
       <div class="campaigns-grid" id="campaignsGrid">
         <!-- Cards injected by JS -->
@@ -289,7 +226,7 @@
       <div class="steps-grid">
         <div class="step">
           <div class="step-num">01</div>
-          <div class="step-icon">✏️</div>
+          <div class="step-icon"><i class="fa-solid fa-pen"></i></div>
           <div class="step-title">Tell your story</div>
           <div class="step-desc">
             Create a campaign page, add your photos, set your goal, and share
@@ -298,7 +235,7 @@
         </div>
         <div class="step">
           <div class="step-num">02</div>
-          <div class="step-icon">📣</div>
+          <div class="step-icon"><i class="fa-solid fa-bullhorn"></i></div>
           <div class="step-title">Spread the word</div>
           <div class="step-desc">
             Share with your network and beyond. Our tools help your campaign
@@ -307,7 +244,7 @@
         </div>
         <div class="step">
           <div class="step-num">03</div>
-          <div class="step-icon">💜</div>
+          <div class="step-icon"><i class="fa-solid fa-heart"></i></div>
           <div class="step-title">Receive donations</div>
           <div class="step-desc">
             Funds are deposited directly to your account. Track progress in real
@@ -316,7 +253,7 @@
         </div>
         <div class="step">
           <div class="step-num">04</div>
-          <div class="step-icon">🌟</div>
+          <div class="step-icon"><i class="fa-solid fa-star"></i></div>
           <div class="step-title">Create impact</div>
           <div class="step-desc">
             Bring your project to life, share your success, and inspire the next
@@ -357,10 +294,53 @@
             contribution, big or small, creates ripples of change in the world.
           </p>
           <div class="footer-social">
-            <button class="social-btn">𝕏</button>
-            <button class="social-btn">in</button>
-            <button class="social-btn">f</button>
-            <button class="social-btn">▶</button>
+            <a
+              href="https://x.com/bekindrgh"
+              target="_blank"
+              class="social-btn"
+            >
+              <i class="fa-brands fa-x-twitter"></i>
+            </a>
+
+            <a
+              href="https://www.linkedin.com/bekindrgh"
+              target="_blank"
+              class="social-btn"
+            >
+              <i class="fa-brands fa-linkedin-in"></i>
+            </a>
+
+            <a
+              href="https://www.facebook.com/bekindrgh"
+              target="_blank"
+              class="social-btn"
+            >
+              <i class="fa-brands fa-facebook-f"></i>
+            </a>
+
+            <a
+              href="https://www.youtube.com/bekindrgh"
+              target="_blank"
+              class="social-btn"
+            >
+              <i class="fa-brands fa-youtube"></i>
+            </a>
+
+            <a
+              href="https://www.instagram.com/bekindrgh"
+              target="_blank"
+              class="social-btn"
+            >
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+
+            <a
+              href="https://www.tiktok.com/bekindrgh"
+              target="_blank"
+              class="social-btn"
+            >
+              <i class="fa-brands fa-tiktok"></i>
+            </a>
           </div>
         </div>
         <div class="footer-col">
