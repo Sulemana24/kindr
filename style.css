@@ -96,6 +96,72 @@ nav.scrolled {
   box-shadow: var(--shadow);
 }
 
+/* ── USER PROFILE ── */
+.user-profile {
+  position: relative;
+}
+
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--pink-600);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+/* Dropdown */
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 120%;
+  background: #fff;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 10px;
+  min-width: 160px;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-dropdown.show {
+  display: flex;
+}
+
+.profile-dropdown button {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.profile-dropdown button:hover {
+  background: var(--pink-50);
+}
+
+.user-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 8px;
+  color: var(--muted);
+}
+
 a {
   text-decoration: none;
 }
@@ -160,20 +226,25 @@ a {
   border: none;
   text-decoration: none;
 }
+
 .btn-ghost {
   background: transparent;
   color: var(--pink-700);
   border: 1.5px solid var(--pink-300);
+  margin-right: 1rem;
 }
+
 .btn-ghost:hover {
   background: var(--pink-100);
   border-color: var(--pink-500);
 }
+
 .btn-primary {
   background: var(--pink-700);
   color: #fff;
   box-shadow: 0 2px 12px rgba(190, 24, 93, 0.3);
 }
+
 .btn-primary:hover {
   background: var(--pink-800);
   transform: translateY(-1px);
@@ -804,6 +875,7 @@ footer {
   background: var(--pink-950);
   color: rgba(255, 255, 255, 0.7);
   padding: 64px 7vw 32px;
+  margin-top: 3rem;
 }
 .footer-grid {
   display: grid;

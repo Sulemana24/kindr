@@ -343,4 +343,124 @@ function reportCampaign(title) {
   openModal("reportModal");
 }
 
+// ── USER STATE (simple localStorage) ──
+function setUser(user) {
+  localStorage.setItem("kindrUser", JSON.stringify(user));
+  updateUI();
+}
+
+function getUser() {
+  return JSON.parse(localStorage.getItem("kindrUser"));
+}
+
+function logout() {
+  localStorage.removeItem("kindrUser");
+  updateUI();
+}
+
+// ── UPDATE NAVBAR UI ──
+function updateUI() {
+  const user = getUser();
+
+  const authButtons = document.getElementById("authButtons");
+  const userProfile = document.getElementById("userProfile");
+  const userName = document.getElementById("userName");
+  const userAvatar = document.getElementById("userAvatar");
+
+  if (user) {
+    authButtons.style.display = "none";
+    userProfile.style.display = "block";
+
+    userName.textContent = user.name;
+    userAvatar.textContent = user.name.charAt(0).toUpperCase();
+  } else {
+    authButtons.style.display = "flex";
+    userProfile.style.display = "none";
+  }
+}
+
+function toggleProfileMenu() {
+  document.getElementById("profileDropdown").classList.toggle("show");
+}
+
+// Close when clicking outside
+window.addEventListener("click", (e) => {
+  if (!e.target.closest(".user-profile")) {
+    document.getElementById("profileDropdown").classList.remove("show");
+  }
+});
+
+function openDashboard() {
+  alert("Dashboard coming soon 🚀");
+}
+
+async function handleSignup() {
+  const name = document.querySelector("#signupModal input[type='text']").value;
+  const email = document.querySelector(
+    "#signupModal input[type='email']",
+  ).value;
+  const password = document.querySelector(
+    "#signupModal input[type='password']",
+  ).value;
+
+  if (!name || !email || !password) {
+    alert("Fill all fields");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setUser(data.user);
+      closeModal("signupModal");
+    } else {
+      alert(data.message || "Signup failed");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
+}
+
+async function handleSignin() {
+  const email = document.querySelector(
+    "#signinModal input[type='email']",
+  ).value;
+  const password = document.querySelector(
+    "#signinModal input[type='password']",
+  ).value;
+
+  try {
+    const res = await fetch("http://localhost:5000/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setUser(data.user);
+      closeModal("signinModal");
+    } else {
+      alert(data.message || "Login failed");
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+updateUI();
+
 document.getElementById("year").textContent = new Date().getFullYear();

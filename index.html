@@ -24,22 +24,41 @@
     <nav id="navbar">
       <div class="nav-brand">
         <img src="/Assets/logo.png" alt="Kindr logo" class="logo-img" />
-        <a href="#" class="nav-logo">kindr<span>.</span></a>
+        <a href="index.html" class="nav-logo">kindr<span>.</span></a>
       </div>
       <ul class="nav-links">
+        <li><a href="#">Home</a></li>
         <li><a href="#campaigns">Explore</a></li>
         <li><a href="#how">How it works</a></li>
         <li><a href="#">Stories</a></li>
         <li><a href="about.html">About</a></li>
       </ul>
-      <div class="nav-actions">
-        <button class="btn btn-ghost" onclick="openModal('signinModal')">
-          Sign in
-        </button>
-        <button class="btn btn-primary" onclick="openModal('campaignModal')">
-          <i class="fa-solid fa-plus"></i>
-          Start a campaign
-        </button>
+      <div class="nav-actions" id="navActions">
+        <!-- BEFORE LOGIN -->
+        <div id="authButtons">
+          <button class="btn btn-ghost" onclick="openModal('signinModal')">
+            Sign in
+          </button>
+          <button class="btn btn-primary" onclick="openModal('campaignModal')">
+            <i class="fa-solid fa-plus"></i>
+            Start a campaign
+          </button>
+        </div>
+
+        <!-- AFTER LOGIN -->
+        <div class="user-profile" id="userProfile" style="display: none">
+          <div class="profile-trigger" onclick="toggleProfileMenu()">
+            <div class="avatar" id="userAvatar">U</div>
+            <i class="fa-solid fa-chevron-down"></i>
+          </div>
+
+          <div class="profile-dropdown" id="profileDropdown">
+            <p class="user-name" id="userName">User</p>
+            <button onclick="openDashboard()">Dashboard</button>
+            <button onclick="openModal('campaignModal')">Start campaign</button>
+            <button onclick="logout()">Logout</button>
+          </div>
+        </div>
       </div>
       <button class="hamburger" id="hamburger" aria-label="Menu">
         <span></span><span></span><span></span>
@@ -48,6 +67,7 @@
 
     <!-- MOBILE MENU -->
     <div class="mobile-menu" id="mobileMenu">
+      <a href="#">Home</a>
       <a href="#campaigns">Explore campaigns</a>
       <a href="#how">How it works</a>
       <a href="#">Success stories</a>
@@ -318,7 +338,7 @@
               <i class="fa-brands fa-facebook-f"></i>
             </a>
 
-            <a
+            <!-- <a
               href="https://www.youtube.com/bekindrgh"
               target="_blank"
               class="social-btn"
@@ -332,7 +352,7 @@
               class="social-btn"
             >
               <i class="fa-brands fa-instagram"></i>
-            </a>
+            </a> -->
 
             <a
               href="https://www.tiktok.com/bekindrgh"
@@ -369,10 +389,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span
-          >© <span id="year"></span> Kindr Technologies Ltd. All rights
-          reserved.</span
-        >
+        <span>© <span id="year"></span> Kindr. All rights reserved.</span>
         <div class="footer-links">
           <a href="privacy.html">Privacy policy</a>
           <a href="terms.html">Terms of service</a>
