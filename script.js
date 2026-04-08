@@ -163,14 +163,14 @@ function renderCards(data) {
       </div>
       <div class="card-footer">
         <button class="btn-donate" <button class="btn-donate" onclick="openDonateModal('${c.title}')">Donate now</button>
-         <button class="btn btn-ghost report-btn" onclick="reportCampaign('${c.title}')"
-  Report
+         <button class="btn btn-ghost report-btn" onclick="reportCampaign('${c.title}')">
+  <i class="fa-solid fa-flag"></i> Report
 </button>
         
         <div class="share-wrap">
        
           <button class="btn-share" onclick="handleShare(this, '${c.title}')" title="Share campaign">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            <i class="fa-solid fa-share-nodes"></i>
           </button>
           <div class="share-tooltip" id="tip-${c.id}">Link copied!</div>
         </div>
@@ -208,13 +208,25 @@ function handleShare(btn, title) {
     window.location.href +
     "#campaign-" +
     title.toLowerCase().replace(/\s+/g, "-");
+
   if (navigator.clipboard) {
     navigator.clipboard.writeText(url);
+  } else {
+    // fallback
+    const temp = document.createElement("input");
+    document.body.appendChild(temp);
+    temp.value = url;
+    temp.select();
+    document.execCommand("copy");
+    document.body.removeChild(temp);
   }
-  const card = btn.closest(".share-wrap");
-  const tooltip = card.querySelector(".share-tooltip");
+
+  const tooltip = btn.parentElement.querySelector(".share-tooltip");
   tooltip.classList.add("show");
-  setTimeout(() => tooltip.classList.remove("show"), 2000);
+
+  setTimeout(() => {
+    tooltip.classList.remove("show");
+  }, 2000);
 }
 
 // ── NAVBAR SCROLL ──
@@ -229,6 +241,7 @@ const hamburger = document.getElementById("hamburger");
 const mobileMenu = document.getElementById("mobileMenu");
 
 hamburger.addEventListener("click", () => {
+  hamburger.classList.toggle("active");
   mobileMenu.classList.toggle("active");
 });
 
@@ -251,13 +264,22 @@ renderCards(campaigns);
 function openModal(id) {
   document.getElementById(id).style.display = "block";
   document.body.style.overflow = "hidden";
+  // close mobile nav if open
+  mobileMenu.classList.remove("active");
 }
 
 function closeModal(id) {
   document.getElementById(id).style.display = "none";
-  document.body.style.overflow = "auto";
-}
 
+  // Only restore scroll if no modals are open
+  const anyOpen = [...document.querySelectorAll(".modal")].some(
+    (m) => m.style.display === "block",
+  );
+
+  if (!anyOpen) {
+    document.body.style.overflow = "auto";
+  }
+}
 // Close when clicking outside
 window.onclick = function (e) {
   document.querySelectorAll(".modal").forEach((modal) => {
