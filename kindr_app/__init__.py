@@ -53,6 +53,13 @@ def create_app(test_config=None):
         SECRET_KEY=os.environ.get("SECRET_KEY", "dev-only-change-in-production"),
         SQLALCHEMY_DATABASE_URI=_database_uri(app.instance_path),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
+        # Avoid stale Postgres connections on managed hosts (Render/RDS),
+        # which can surface as intermittent SSL EOF errors.
+        SQLALCHEMY_ENGINE_OPTIONS={
+            "pool_pre_ping": True,
+            "pool_recycle": 300,
+            "pool_timeout": 30,
+        },
         SESSION_COOKIE_HTTPONLY=True,
         SESSION_COOKIE_SECURE=_cookie_secure,
         SESSION_COOKIE_SAMESITE=_cookie_samesite,
