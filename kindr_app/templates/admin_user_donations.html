@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}User Donations — Admin{% endblock %}
+{% block main %}
+<section class="dashboard-wrap">
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">Donation history</h1>
+    <p class="dashboard-email"><strong>{{ target_user.name }}</strong> ({{ target_user.email }})</p>
+    <div class="dashboard-actions">
+      <a class="btn btn-ghost" href="{{ url_for('main.admin_dashboard') }}">Back to admin</a>
+    </div>
+  </div>
+  <div class="dashboard-section">
+    {% if donations %}
+    <div class="dashboard-table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Campaign</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in donations %}
+          <tr>
+            <td>{{ d.campaign.title if d.campaign else "—" }}</td>
+            <td>{{ d.currency }} {{ "{:,.2f}".format(d.amount or 0) }}</td>
+            <td>{{ d.status }}</td>
+            <td>{{ d.created_at.strftime("%d %b %Y %H:%M") if d.created_at else "—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="dashboard-empty">No donations found for this user.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

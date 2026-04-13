@@ -1,0 +1,39 @@
+{% extends "blog_base.html" %}
+{% block blog_title %}{{ post.title }} — Kindr Stories{% endblock %}
+{% block blog_main %}
+<main class="blog-ed-main blog-ed-main--article">
+<article class="blog-ed-article">
+  <nav class="blog-ed-breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ url_for('main.blog') }}">Stories &amp; updates</a>
+    <span class="blog-ed-breadcrumb-sep" aria-hidden="true">/</span>
+    <span class="blog-ed-breadcrumb-current">{{ post.title }}</span>
+  </nav>
+
+  <header class="blog-ed-article-head">
+    <span class="blog-ed-cat blog-ed-cat--{{ post.post_type }}">{{ post.post_type | replace('_', ' ') | title }}</span>
+    <h1 class="blog-ed-article-title">{{ post.title }}</h1>
+    <div class="blog-ed-meta">
+      <span>{% if post.author %}{{ post.author.name }}{% else %}Community member{% endif %}</span>
+      <span class="blog-ed-meta-dot" aria-hidden="true">·</span>
+      <time datetime="{{ post.created_at.isoformat() if post.created_at else '' }}">{{ post.created_at.strftime('%B %d, %Y') if post.created_at else '' }}</time>
+      {% if post.post_type == 'marketplace' and post.price is not none %}
+      <span class="blog-ed-meta-dot" aria-hidden="true">·</span>
+      <span class="blog-ed-price">Ghc{{ '{:,.2f}'.format(post.price) }}</span>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if post.image_url %}
+  <figure class="blog-ed-article-figure">
+    <img src="{{ post.image_url }}" alt="" class="blog-ed-article-cover" />
+  </figure>
+  {% endif %}
+
+  <div class="blog-ed-article-body">{{ post.content }}</div>
+
+  <footer class="blog-ed-article-footer">
+    <a href="{{ url_for('main.blog') }}" class="blog-ed-back">← Back to all stories</a>
+  </footer>
+</article>
+</main>
+{% endblock %}

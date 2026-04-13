@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block main %}
+<section class="about-page">
+  <header class="about-hero">
+    <div class="about-hero-inner">
+      <p class="about-kicker">About Kindr</p>
+      <h1 class="about-title">Kindness, scaled for everyone</h1>
+      <p class="about-lead">
+        Kindr is a digital crowdfunding platform built to make fundraising simple, transparent, and accessible.
+        We help individuals, communities, churches, and organizations raise funds for healthcare, education,
+        local projects, and causes that matter.
+      </p>
+    </div>
+  </header>
+
+  <div class="about-content container-xl">
+    <div class="about-grid">
+      <div class="about-prose">
+        <h2>Our mission</h2>
+        <p>
+          In many places, fundraising still relies on informal methods that are stressful, limited in reach,
+          and hard to track. Kindr provides a secure space where campaigns can be created, shared widely,
+          and supported with confidence. We combine technology with community so more people get help when
+          they need it most.
+        </p>
+        <h2>Trust &amp; transparency</h2>
+        <p>
+          We are committed to clear communication: verified accounts, admin review for campaigns where
+          applicable, and tools so donors can follow progress. Your trust is the foundation of everything we build.
+        </p>
+      </div>
+      <aside class="about-aside">
+        <div class="about-aside-card">
+          <h3>Contact</h3>
+          <p><strong>Email:</strong> bekindrgh@gmail.com</p>
+          <p><strong>Phone:</strong> +233 595 403 340</p>
+        </div>
+      </aside>
+    </div>
+
+    <section class="about-ai-section" id="kindr-ai-assistant" aria-labelledby="about-ai-heading">
+      <div class="about-ai-card">
+        <div class="about-ai-copy">
+          <h2 id="about-ai-heading">Ask about Kindr</h2>
+          <p>
+            Chat with our assistant (powered by <strong>Google Gemini</strong> on the server). It can explain
+            how Kindr works, share general fundraising tips, and point you to the right next steps—without
+            accessing your account or payment details.
+          </p>
+          <ul class="about-ai-hints">
+            <li>Do not paste passwords, card numbers, or OTP codes into the chat.</li>
+            <li>For account-specific help, contact support or use in-app flows.</li>
+            <li>Replies are general guidance only—not legal, tax, or financial advice.</li>
+            <li>If the assistant can’t help or the service errors, we email your question to our support team for follow-up.</li>
+          </ul>
+        </div>
+        <div class="about-ai-mount" id="kindr-ai-root" aria-busy="false"></div>
+      </div>
+    </section>
+    <script src="{{ url_for('static', filename='js/kindr-ai-chat.js') }}" defer></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (window.kindrAI) {
+          window.kindrAI.mount("#kindr-ai-root", {
+            apiBase: "/api/ai/chat",
+            context: "about_kindr",
+          });
+        }
+      });
+    </script>
+  </div>
+</section>
+{% endblock %}

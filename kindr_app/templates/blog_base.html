@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block body_class %}page-blog page-blog-editorial{% endblock %}
+{% block title %}{% block blog_title %}Stories — Kindr{% endblock %}{% endblock %}
+{% block main %}
+{# GoFundMe-style: light editorial shell, clear hierarchy, trust-focused layout #}
+<div class="blog-editorial">
+  <header class="blog-ed-bar" aria-label="Kindr stories">
+    <div class="blog-ed-bar-inner">
+      <a href="{{ url_for('main.index') }}" class="blog-ed-logo">
+        <img src="{{ url_for('static', filename='Assets/logo.png') }}" alt="" width="36" height="36" />
+        <span class="blog-ed-logo-text">kindr<span>.</span></span>
+      </a>
+      <nav class="blog-ed-nav" aria-label="Sections">
+        <a href="{{ url_for('main.blog') }}" class="blog-ed-nav-link {% if blog_filter == 'all' and request.endpoint != 'main.blog_post' %}is-active{% endif %}">Latest</a>
+        <a href="{{ url_for('main.blog', type='story') }}" class="blog-ed-nav-link {% if blog_filter == 'story' %}is-active{% endif %}">Stories</a>
+        <a href="{{ url_for('main.blog', type='news') }}" class="blog-ed-nav-link {% if blog_filter == 'news' %}is-active{% endif %}">News</a>
+        <a href="{{ url_for('main.blog', type='marketplace') }}" class="blog-ed-nav-link {% if blog_filter == 'marketplace' %}is-active{% endif %}">Marketplace</a>
+      </nav>
+      <div class="blog-ed-actions">
+        <a href="{{ url_for('main.about') }}" class="blog-ed-link-quiet">About Kindr</a>
+        {% if current_user.is_authenticated %}
+        <button type="button" class="blog-ed-btn" onclick="openModal('blogPostModal')">Write a post</button>
+        {% else %}
+        <button type="button" class="blog-ed-btn blog-ed-btn--ghost" onclick="openModal('signinModal')">Sign in</button>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+  {% block blog_main %}{% endblock %}
+</div>
+{% endblock %}

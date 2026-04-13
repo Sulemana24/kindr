@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block main %}
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-left">
+    <h1 class="hero-title">
+      Fund what<br /><em>truly matters</em><br />to the world.
+    </h1>
+    <p class="hero-desc">
+      Kindr connects passionate changemakers with generous supporters. Every
+      story deserves a chance — and every donor can make one happen.
+    </p>
+    <div class="hero-actions">
+      <button
+        type="button"
+        class="btn btn-primary btn-large"
+        onclick="document.getElementById('campaigns').scrollIntoView({ behavior: 'smooth' })"
+      >
+        Explore campaigns
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+      <button type="button" class="btn btn-ghost btn-large" onclick="openCampaignFlow()">
+        Start a campaign
+      </button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num" id="statTotalRaised">Ghc0</div>
+        <div class="stat-label">Total raised</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="statCampaignCount">0</div>
+        <div class="stat-label">Campaigns</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="statDonorCount">0</div>
+        <div class="stat-label">Donors</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <img
+      class="hero-img"
+      src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=900&q=80"
+      alt="People coming together to support causes"
+    />
+    <div class="hero-img-overlay"></div>
+    <div class="hero-floating-card">
+      <div class="fc-top">
+        <div class="fc-avatar">MA</div>
+        <div>
+          <div class="fc-name">Maria A. just donated</div>
+          <div class="fc-sub">2 minutes ago</div>
+        </div>
+      </div>
+      <div class="fc-amount">Recent support</div>
+      <div class="fc-label">to "Clean Water for Koforidua"</div>
+    </div>
+  </div>
+</section>
+
+<div class="trust-section">
+  <div class="trust-item">
+    <i class="fa-solid fa-shield-halved"></i>
+    Secure payments
+  </div>
+  <div class="trust-item">
+    <i class="fa-solid fa-check"></i>
+    Verified campaigns
+  </div>
+  <div class="trust-item">
+    <i class="fa-solid fa-clock"></i>
+    Real-time tracking
+  </div>
+  <div class="trust-item">
+    <i class="fa-solid fa-coins"></i>
+    7% platform fee
+  </div>
+</div>
+
+<section class="categories-section" id="categories">
+  <div class="section-eyebrow">Browse by cause</div>
+  <div
+    style="
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 16px;
+    "
+  >
+    <h2 class="section-title">
+      Find your
+      <em style="font-style: italic; color: var(--purple-600)">cause</em>
+    </h2>
+  </div>
+  <div class="categories-grid" id="catGrid">
+    <button type="button" class="cat-chip active" onclick="filterCat(this, 'all')">
+      <i class="fa-solid fa-globe"></i> All campaigns
+    </button>
+    <button type="button" class="cat-chip" onclick="filterCat(this, 'education')">
+      <i class="fa-solid fa-book"></i> Education
+    </button>
+    <button type="button" class="cat-chip" onclick="filterCat(this, 'health')">
+      <i class="fa-solid fa-heart-pulse"></i> Health & Medical
+    </button>
+    <button type="button" class="cat-chip" onclick="filterCat(this, 'environment')">
+      <i class="fa-solid fa-leaf"></i> Environment
+    </button>
+    <button type="button" class="cat-chip" onclick="filterCat(this, 'community')">
+      <i class="fa-solid fa-people-group"></i> Community
+    </button>
+    <button type="button" class="cat-chip" onclick="filterCat(this, 'arts')">
+      <i class="fa-solid fa-palette"></i> Arts & Culture
+    </button>
+    <button type="button" class="cat-chip" onclick="filterCat(this, 'animals')">
+      <i class="fa-solid fa-paw"></i> Animals
+    </button>
+    <button type="button" class="cat-chip" onclick="filterCat(this, 'emergency')">
+      <i class="fa-solid fa-triangle-exclamation"></i> Emergency
+    </button>
+  </div>
+</section>
+
+<section class="campaigns-section" id="campaigns">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Making a difference</div>
+      <h2 class="section-title">Active campaigns</h2>
+      <p class="section-sub">
+        Every campaign is a story waiting to be completed. Find one that moves you.
+      </p>
+    </div>
+    <button type="button" class="btn btn-ghost">
+      View all campaigns <i class="fa-solid fa-arrow-right"></i>
+    </button>
+  </div>
+  <div class="campaigns-grid" id="campaignsGrid"></div>
+</section>
+
+<section class="how-section" id="how">
+  <div class="section-eyebrow">Simple process</div>
+  <h2 class="section-title">How Kindr works</h2>
+  <p class="section-sub">From idea to impact in three easy steps. We handle the rest.</p>
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-icon"><i class="fa-solid fa-pen"></i></div>
+      <div class="step-title">Tell your story</div>
+      <div class="step-desc">
+        Create a campaign page, add your photos, set your goal, and share what makes your
+        cause worth supporting.
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-icon"><i class="fa-solid fa-bullhorn"></i></div>
+      <div class="step-title">Spread the word</div>
+      <div class="step-desc">
+        Share with your network and beyond. Our tools help your campaign reach donors who
+        care about your cause.
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-icon"><i class="fa-solid fa-heart"></i></div>
+      <div class="step-title">Receive donations</div>
+      <div class="step-desc">
+        Funds are deposited directly to your account. Track progress in real time and keep
+        donors updated.
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-icon"><i class="fa-solid fa-star"></i></div>
+      <div class="step-title">Create impact</div>
+      <div class="step-desc">
+        Bring your project to life, share your success, and inspire the next campaign to
+        change the world.
+      </div>
+    </div>
+  </div>
+  <div style="margin-top: 48px; display: flex; gap: 14px; flex-wrap: wrap">
+    <button type="button" class="btn btn-primary btn-large" onclick="openCampaignFlow()">
+      Start your campaign
+    </button>
+    <button
+      type="button"
+      class="btn btn-outline-white btn-large"
+      onclick="document.getElementById('campaigns').scrollIntoView({ behavior: 'smooth' })"
+    >
+      Browse campaigns
+    </button>
+  </div>
+</section>
+{% endblock %}

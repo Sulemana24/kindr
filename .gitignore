@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+
+# Flask/runtime artifacts
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# Secrets and local env
+.env
+.env.*
+!.env.example
+
+# User-generated uploads
+kindr_app/static/uploads/
+
+# Logs
+*.log
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

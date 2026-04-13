@@ -1,0 +1,460 @@
+{% extends "base.html" %}
+{% block title %}Admin Control Center — Kindr{% endblock %}
+{% block main %}
+<section class="admin-shell" id="adminTop">
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-brand">Kindr Admin</div>
+    <a href="#overview">Executive Overview</a>
+    <a href="#withdrawals">Withdrawals</a>
+    <a href="#finance">Financial Monitoring</a>
+    <a href="#users">User Management</a>
+    <a href="#campaigns">Campaign Management</a>
+    <a href="#analytics">Analytics</a>
+    <a href="#alerts">Alerts & Risk</a>
+    <a href="#controls">System Controls</a>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <div>
+        <h1>Admin Control Center</h1>
+        <p>Signed in as <strong>{{ current_user.name }}</strong> ({{ current_user.email }})</p>
+      </div>
+      <div class="admin-top-actions">
+        <button type="button" class="btn btn-ghost" id="themeToggleBtn">Toggle Theme</button>
+        <a class="btn btn-ghost" href="{{ url_for('main.dashboard') }}">My dashboard</a>
+        <a class="btn btn-primary" href="{{ url_for('main.index') }}">Home</a>
+      </div>
+    </header>
+
+    <section id="overview" class="admin-section">
+      <h2>Executive Overview</h2>
+      <div class="metric-grid">
+        <article class="metric-card"><h3>Total campaigns</h3><p>{{ executive.total_campaigns }}</p></article>
+        <article class="metric-card"><h3>Active campaigns</h3><p>{{ executive.active_campaigns }}</p></article>
+        <article class="metric-card"><h3>Completed campaigns</h3><p>{{ executive.completed_campaigns }}</p></article>
+        <article class="metric-card"><h3>Total users</h3><p>{{ executive.total_users }}</p></article>
+        <article class="metric-card"><h3>Total donors</h3><p>{{ executive.total_donors }}</p></article>
+        <article class="metric-card"><h3>Total raised</h3><p>Ghc{{ "{:,.0f}".format(executive.total_raised or 0) }}</p></article>
+        <article class="metric-card"><h3>Average donation</h3><p>Ghc{{ "{:,.2f}".format(executive.avg_donation or 0) }}</p></article>
+        <article class="metric-card"><h3>Platform revenue (7%)</h3><p>Ghc{{ "{:,.2f}".format(executive.platform_revenue or 0) }}</p></article>
+      </div>
+    </section>
+
+    <section id="withdrawals" class="admin-section admin-anchor-section">
+      <h2>Manual withdrawal requests</h2>
+      <p class="admin-muted">
+        Payouts are processed outside the app. Approve only after you send funds manually; enter the reference from your bank or mobile money.
+      </p>
+      {% set aw = (request.args.get('w') or '') %}
+      {% if aw == 'completed' %}
+      <div class="admin-flash admin-flash-success">Withdrawal marked completed.</div>
+      {% elif aw == 'rejected' %}
+      <div class="admin-flash admin-flash-success">Withdrawal request rejected.</div>
+      {% elif aw in ('missing_ref', 'bad_amount', 'bad_state') %}
+      <div class="admin-flash admin-flash-error">Could not update that request. Check the form and try again.</div>
+      {% endif %}
+      {% if withdrawal_requests %}
+      <div class="withdrawal-card-list">
+        {% for w in withdrawal_requests %}
+        <article class="withdrawal-card" data-wstatus="{{ w.status or '' }}">
+          <div class="withdrawal-card-head">
+            <span class="withdrawal-id">#{{ w.id }}</span>
+            <span class="withdrawal-status withdrawal-status-{{ (w.status or 'pending') }}">{{ (w.status or 'pending')|replace('_',' ') }}</span>
+          </div>
+          <p class="withdrawal-amount">{{ w.currency }} {{ "{:,.2f}".format(w.amount or 0) }}</p>
+          <ul class="withdrawal-meta">
+            <li><strong>User</strong> {{ w.user.name if w.user else '—' }} · {{ w.user.email if w.user else '—' }}</li>
+            <li><strong>Campaign</strong> {{ w.campaign.title if w.campaign else '—' }} (ID {{ w.campaign_id }})</li>
+            <li><strong>Requested</strong> {{ w.requested_at.strftime('%d %b %Y, %H:%M UTC') if w.requested_at else '—' }}</li>
+            {% if w.status == 'completed' %}
+            <li><strong>Reference</strong> {{ w.payout_reference or '—' }}</li>
+            <li><strong>Paid amount</strong> {{ w.currency }} {{ "{:,.2f}".format(w.payout_amount or 0) }}</li>
+            <li><strong>Completed</strong> {{ w.payout_completed_at.strftime('%d %b %Y, %H:%M UTC') if w.payout_completed_at else '—' }}</li>
+            {% if w.reviewed_by %}<li><strong>Marked by</strong> {{ w.reviewed_by.name }} ({{ w.reviewed_by.email }})</li>{% endif %}
+            {% elif w.status == 'rejected' %}
+            <li><strong>Rejected</strong> {{ w.rejected_at.strftime('%d %b %Y, %H:%M UTC') if w.rejected_at else '—' }}</li>
+            {% if w.reviewed_by %}<li><strong>Rejected by</strong> {{ w.reviewed_by.name }}</li>{% endif %}
+            {% if w.rejection_note %}<li><strong>Note</strong> {{ w.rejection_note }}</li>{% endif %}
+            {% endif %}
+          </ul>
+          {% if (w.status or '') == 'pending' %}
+          <div class="withdrawal-actions">
+            <form method="post" action="{{ url_for('main.admin_complete_withdrawal', request_id=w.id) }}" class="withdrawal-complete-form">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <label class="withdrawal-label" for="payout-ref-{{ w.id }}">Payout reference ID</label>
+              <input class="modal-input" id="payout-ref-{{ w.id }}" name="payout_reference" type="text" required autocomplete="off" placeholder="Bank / MoMo reference" />
+              <label class="withdrawal-label" for="payout-amt-{{ w.id }}">Amount sent ({{ w.currency }})</label>
+              <input class="modal-input" id="payout-amt-{{ w.id }}" name="payout_amount" type="text" inputmode="decimal" value="{{ '{:.2f}'.format(w.amount or 0) }}" />
+              <button type="submit" class="btn btn-primary btn-block-touch">Mark completed</button>
+            </form>
+            <form method="post" action="{{ url_for('main.admin_reject_withdrawal', request_id=w.id) }}" class="withdrawal-reject-form" onsubmit="return confirm('Reject this withdrawal request?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <label class="withdrawal-label" for="rej-note-{{ w.id }}">Rejection note (optional)</label>
+              <textarea class="modal-input" id="rej-note-{{ w.id }}" name="rejection_note" rows="2" placeholder="Reason shown internally"></textarea>
+              <button type="submit" class="btn btn-ghost btn-block-touch">Reject</button>
+            </form>
+          </div>
+          {% endif %}
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="admin-muted">No withdrawal requests yet.</p>
+      {% endif %}
+    </section>
+
+    <section id="finance" class="admin-section">
+      <div class="section-head">
+        <h2>Financial & Payment Monitoring</h2>
+        <div class="filters">
+          <select><option>Daily</option><option>Weekly</option><option>Monthly</option></select>
+        </div>
+      </div>
+      <div class="metric-grid compact">
+        <article class="metric-card"><h3>Successful payments</h3><p>{{ financial.successful_payments }}</p></article>
+        <article class="metric-card"><h3>Pending payments</h3><p>{{ financial.pending_payments }}</p></article>
+        <article class="metric-card"><h3>Failed payments</h3><p>{{ financial.failed_payments }}</p></article>
+        <article class="metric-card"><h3>Total payouts made</h3><p>Ghc{{ "{:,.2f}".format(financial.total_payouts or 0) }}</p></article>
+        <article class="metric-card"><h3>Pending withdrawals</h3><p>Ghc{{ "{:,.2f}".format(financial.pending_withdrawals or 0) }}</p></article>
+        <article class="metric-card"><h3>Manual payouts completed</h3><p>Ghc{{ "{:,.2f}".format(financial.manual_payouts_completed or 0) }}</p></article>
+        <article class="metric-card"><h3>Refund requests</h3><p>{{ financial.refund_requests }}</p></article>
+        <article class="metric-card"><h3>Chargebacks/disputes</h3><p>{{ financial.chargebacks_disputes }}</p></article>
+      </div>
+      <div class="table-card">
+        <h3>Real-time transaction feed</h3>
+        <table class="admin-table">
+          <thead><tr><th>Time</th><th>Campaign</th><th>Donor</th><th>Amount</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for t in recent_transactions %}
+            <tr>
+              <td>{{ t.created_at.strftime("%d %b %H:%M") if t.created_at else "—" }}</td>
+              <td>{{ t.campaign.title if t.campaign else "—" }}</td>
+              <td>{{ t.payer_email }}</td>
+              <td>{{ t.currency }} {{ "{:,.2f}".format(t.amount or 0) }}</td>
+              <td>{{ t.status }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="users" class="admin-section">
+      <h2>User Management</h2>
+      <div class="metric-grid compact">
+        <article class="metric-card"><h3>Total users</h3><p>{{ user_stats.total_users }}</p></article>
+        <article class="metric-card"><h3>Verified users</h3><p>{{ user_stats.verified_users }}</p></article>
+        <article class="metric-card"><h3>Unverified users</h3><p>{{ user_stats.unverified_users }}</p></article>
+        <article class="metric-card"><h3>Suspended users</h3><p>{{ user_stats.suspended_users }}</p></article>
+        <article class="metric-card"><h3>Repeat donors</h3><p>{{ user_stats.repeat_donors }}</p></article>
+      </div>
+      <div class="table-card">
+        <div class="section-head">
+          <h3>User list</h3>
+          <div class="filters">
+            <input id="usersSearch" type="search" placeholder="Search users..." />
+          </div>
+        </div>
+        <table class="admin-table" id="usersTable">
+          <thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            {% for u in users %}
+            <tr>
+              <td>{{ u.name }}</td>
+              <td>{{ u.email }}</td>
+              <td>
+                {{ "Verified" if u.is_active else "Unverified" }}
+                {% if u.is_suspended %}
+                · Suspended
+                {% endif %}
+              </td>
+              <td>
+                <div class="inline-actions">
+                  <button type="button" class="btn btn-ghost" onclick="alert('Name: {{ u.name }}\nEmail: {{ u.email }}\nPhone: {{ u.phone or "—" }}')">View profile</button>
+                  <form method="post" action="{{ url_for('main.admin_verify_user', user_id=u.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <button type="submit" class="btn btn-ghost">Verify user</button>
+                  </form>
+                  <form method="post" action="{{ url_for('main.admin_toggle_suspend_user', user_id=u.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    <button type="submit" class="btn btn-ghost">
+                      {% if u.is_suspended %}Unsuspend{% else %}Suspend/Ban{% endif %}
+                    </button>
+                  </form>
+                  <a class="btn btn-ghost" href="{{ url_for('main.admin_user_donations', user_id=u.id) }}">Donation history</a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div class="pager"><button class="btn btn-ghost" id="usersPrev">Prev</button><span id="usersPageInfo"></span><button class="btn btn-ghost" id="usersNext">Next</button></div>
+      </div>
+      <div class="table-card">
+        <h3>Top donors</h3>
+        <table class="admin-table">
+          <thead><tr><th>Email</th><th>Total given</th><th>Donations</th></tr></thead>
+          <tbody>
+            {% for d in top_donors %}
+            <tr><td>{{ d.email }}</td><td>Ghc{{ "{:,.2f}".format(d.amount or 0) }}</td><td>{{ d.count }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="campaigns" class="admin-section">
+      <h2>Campaign Management</h2>
+      <div class="metric-grid compact">
+        <article class="metric-card"><h3>Pending approval</h3><p>{{ campaign_stats.pending_approval }}</p></article>
+        <article class="metric-card"><h3>Approved campaigns</h3><p>{{ campaign_stats.approved }}</p></article>
+        <article class="metric-card"><h3>Rejected campaigns</h3><p>{{ campaign_stats.rejected }}</p></article>
+        <article class="metric-card"><h3>Flagged campaigns</h3><p>{{ campaign_stats.flagged }}</p></article>
+        <article class="metric-card"><h3>Removed campaigns</h3><p>{{ campaign_stats.removed }}</p></article>
+        <article class="metric-card"><h3>Trending campaigns</h3><p>{{ campaign_stats.trending_count }}</p></article>
+        <article class="metric-card"><h3>Nearing goal</h3><p>{{ campaign_stats.nearing_goal }}</p></article>
+        <article class="metric-card"><h3>Success rate</h3><p>{{ campaign_stats.success_rate }}%</p></article>
+      </div>
+      <div class="table-card">
+        <div class="section-head">
+          <h3>Campaign moderation queue</h3>
+          <div class="filters">
+            <input id="campaignsSearch" type="search" placeholder="Search campaigns..." />
+          </div>
+        </div>
+        <table class="admin-table" id="campaignsTable">
+          <thead>
+            <tr><th>Title</th><th>Owner</th><th>Raised</th><th>Goal</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            {% for c in campaigns %}
+            <tr>
+              <td>{{ c.title }}</td>
+              <td>{{ c.owner.name if c.owner else "—" }}</td>
+              <td>Ghc{{ "{:,.0f}".format(c.raised_amount or 0) }}</td>
+              <td>Ghc{{ "{:,.0f}".format(c.goal_amount) }}</td>
+              <td>{{ c.status or "pending_review" }}</td>
+              <td>
+                <div class="inline-actions">
+                  <form method="post" action="{{ url_for('main.admin_accept_campaign', campaign_id=c.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}" /><button type="submit" class="btn btn-ghost">Approve</button></form>
+                  <form method="post" action="{{ url_for('main.admin_reject_campaign', campaign_id=c.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}" /><button type="submit" class="btn btn-ghost">Reject</button></form>
+                  <form method="post" action="{{ url_for('main.admin_flag_campaign', campaign_id=c.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}" /><button type="submit" class="btn btn-ghost">Flag</button></form>
+                  <form method="post" action="{{ url_for('main.admin_delete_campaign', campaign_id=c.id) }}" onsubmit="return confirm('Remove campaign and donations?');"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}" /><button type="submit" class="btn btn-ghost">Remove</button></form>
+                  <button type="button" class="btn btn-ghost">View details</button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div class="pager"><button class="btn btn-ghost" id="campaignsPrev">Prev</button><span id="campaignsPageInfo"></span><button class="btn btn-ghost" id="campaignsNext">Next</button></div>
+      </div>
+    </section>
+
+    <section id="analytics" class="admin-section">
+      <h2>Analytics & Insights</h2>
+      <div class="chart-grid">
+        <article class="chart-card"><h3>Revenue over time</h3><canvas id="revenueChart"></canvas></article>
+        <article class="chart-card"><h3>User growth</h3><canvas id="growthChart"></canvas></article>
+        <article class="chart-card"><h3>Campaign performance</h3><canvas id="campaignChart"></canvas></article>
+        <article class="chart-card"><h3>Donor distribution</h3><canvas id="donorChart"></canvas></article>
+      </div>
+      <div class="metric-card" style="margin-top:12px">
+        <h3>Conversion rate (visitors to donors)</h3>
+        <p>{{ conversion_rate }}%</p>
+      </div>
+    </section>
+
+    <section id="alerts" class="admin-section">
+      <h2>Alerts & Risk Monitoring</h2>
+      <div class="alerts-list">
+        {% for a in alerts %}
+        <div class="alert-item {{ a.level }}">{{ a.text }}</div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section id="controls" class="admin-section">
+      <h2>System Controls</h2>
+      <div class="controls-grid">
+        <article class="table-card">
+          <h3>Platform settings</h3>
+          <label>Platform fee (%)</label>
+          <input class="modal-input" type="number" value="{{ system_controls.platform_fee }}" />
+          <label>Payment gateway</label>
+          <input class="modal-input" type="text" value="{{ system_controls.gateway }}" />
+          <label>Email/OTP</label>
+          <input class="modal-input" type="text" value="{{ 'Enabled' if system_controls.email_otp_enabled else 'Disabled' }}" />
+          <button type="button" class="btn btn-primary">Save configuration</button>
+        </article>
+        <article class="table-card">
+          <h3>Feature toggles</h3>
+          <label><input type="checkbox" checked /> Enable campaign approvals</label>
+          <label><input type="checkbox" checked /> Enable payment risk checks</label>
+          <label><input type="checkbox" checked /> Enable OTP on login</label>
+          <label><input type="checkbox" /> Enable beta recommendations</label>
+        </article>
+        <article class="table-card">
+          <h3>Admin activity logs (audit trail)</h3>
+          <ul class="logs-list">
+            <li>{{ current_user.email }} viewed admin dashboard.</li>
+            <li>Campaign moderation actions are tracked by route handlers.</li>
+            <li>Donation removals are tracked by database updates.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>
+
+<style>
+  .admin-shell{display:grid;grid-template-columns:250px minmax(0,1fr);gap:20px;max-width:1400px;margin:96px auto 40px;padding:0 16px}
+  .admin-sidebar{position:sticky;top:90px;height:fit-content;background:var(--cream);border:1px solid var(--border);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+  .admin-sidebar .admin-brand{font-weight:800;margin-bottom:8px}
+  .admin-sidebar a{padding:9px 10px;border-radius:10px;color:var(--ink);text-decoration:none}
+  .admin-sidebar a:hover{background:var(--pink-50)}
+  .admin-topbar{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:16px}
+  .admin-topbar h1{margin:0}
+  .admin-topbar p{margin:4px 0 0;color:var(--muted)}
+  .admin-top-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .admin-section{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
+  .section-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}
+  .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+  .metric-grid.compact{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+  .metric-card{background:var(--pink-50);border:1px solid var(--border);border-radius:12px;padding:12px}
+  .metric-card h3{font-size:.86rem;color:var(--muted);margin:0 0 8px}
+  .metric-card p{font-size:1.2rem;font-weight:800;margin:0}
+  .table-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:12px}
+  .admin-table{width:100%;border-collapse:collapse}
+  .admin-table th,.admin-table td{padding:10px;border-bottom:1px solid var(--border);text-align:left}
+  .admin-table th{color:var(--muted);font-weight:700}
+  .inline-actions{display:flex;gap:6px;flex-wrap:wrap}
+  .chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+  .chart-card{border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff}
+  .alerts-list{display:grid;gap:8px}
+  .alert-item{padding:10px 12px;border-radius:10px;border:1px solid var(--border)}
+  .alert-item.high{background:#fdecec;color:#8e1b1b}
+  .alert-item.medium{background:#fff8e6;color:#8a5b00}
+  .alert-item.low{background:#e8f8ee;color:#126736}
+  .controls-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+  .logs-list{padding-left:18px;margin:0}
+  .logs-list li{margin:6px 0}
+  .filters input,.filters select{padding:8px 10px;border-radius:8px;border:1px solid var(--border)}
+  .pager{display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-top:10px}
+  html[data-theme="dark"] .admin-section,
+  html[data-theme="dark"] .table-card,
+  html[data-theme="dark"] .chart-card{background:#20192d;color:#f2eef8}
+  html[data-theme="dark"] .admin-sidebar{background:#20192d}
+  html[data-theme="dark"] .metric-card{background:#2b213b}
+  .admin-anchor-section{scroll-margin-top:96px}
+  .admin-muted{color:var(--muted);font-size:.92rem;line-height:1.5;margin:0 0 12px}
+  .admin-flash{padding:10px 12px;border-radius:10px;margin-bottom:12px;font-size:.92rem}
+  .admin-flash-success{background:#e8f8ee;color:#126736;border:1px solid #98d8af}
+  .admin-flash-error{background:#fdecec;color:#8e1b1b;border:1px solid #f1b4b4}
+  .withdrawal-card-list{display:grid;gap:14px;margin-top:12px}
+  .withdrawal-card{border:1px solid var(--border);border-radius:14px;padding:14px 16px;background:var(--pink-50)}
+  .withdrawal-card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+  .withdrawal-id{font-weight:800;font-size:.85rem;color:var(--muted)}
+  .withdrawal-status{font-size:.78rem;font-weight:700;padding:4px 10px;border-radius:999px;text-transform:capitalize}
+  .withdrawal-status-pending{background:#fff8e6;color:#8a5b00}
+  .withdrawal-status-completed{background:#e8f8ee;color:#126736}
+  .withdrawal-status-rejected{background:#fdecec;color:#8e1b1b}
+  .withdrawal-amount{font-size:1.35rem;font-weight:800;margin:0 0 10px}
+  .withdrawal-meta{list-style:none;padding:0;margin:0 0 12px;font-size:.9rem}
+  .withdrawal-meta li{margin:6px 0;padding:0;line-height:1.45;word-break:break-word}
+  .withdrawal-meta strong{display:block;font-size:.72rem;text-transform:uppercase;color:var(--muted);letter-spacing:.04em;margin-bottom:2px}
+  .withdrawal-actions{display:grid;gap:14px;margin-top:8px}
+  @media (min-width:720px){.withdrawal-actions{grid-template-columns:1fr 1fr;align-items:start}}
+  .withdrawal-complete-form,.withdrawal-reject-form{display:flex;flex-direction:column;gap:8px}
+  .withdrawal-label{font-size:.78rem;font-weight:600;color:var(--muted)}
+  .btn-block-touch{width:100%;min-height:48px;padding:12px 16px;font-size:1rem;justify-content:center}
+  @media (max-width:980px){.admin-shell{grid-template-columns:1fr}.admin-sidebar{position:relative;top:0;flex-direction:row;flex-wrap:wrap;overflow:auto}}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  const revenuePoints = {{ revenue_points|tojson }};
+  const growthPoints = {{ growth_points|tojson }};
+  const campaignPerfPoints = {{ campaign_perf_points|tojson }};
+  const donorDistribution = {{ donor_distribution|tojson }};
+
+  function buildLine(el, points, label, color) {
+    const ctx = document.getElementById(el);
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: "line",
+      data: { labels: points.map(p => p.label), datasets: [{ label, data: points.map(p => p.value), borderColor: color, backgroundColor: color + "33", fill: true, tension: 0.35 }] },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+  }
+  function buildBar(el, points, label, color) {
+    const ctx = document.getElementById(el);
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: "bar",
+      data: { labels: points.map(p => p.label), datasets: [{ label, data: points.map(p => p.value), backgroundColor: color }] },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+  }
+  function buildPie(el, data) {
+    const ctx = document.getElementById(el);
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: "pie",
+      data: { labels: ["One-time donors", "Repeat donors"], datasets: [{ data: [data.one_time || 0, data.repeat || 0], backgroundColor: ["#f472b6", "#7c3aed"] }] },
+      options: { responsive: true }
+    });
+  }
+  buildLine("revenueChart", revenuePoints, "Revenue", "#db2777");
+  buildLine("growthChart", growthPoints, "User growth", "#7c3aed");
+  buildBar("campaignChart", campaignPerfPoints, "Campaign performance", "#14b8a6");
+  buildPie("donorChart", donorDistribution);
+
+  const themeBtn = document.getElementById("themeToggleBtn");
+  themeBtn?.addEventListener("click", () => {
+    const root = document.documentElement;
+    const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    localStorage.setItem("kindr_admin_theme", next);
+  });
+  const savedTheme = localStorage.getItem("kindr_admin_theme");
+  if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+
+  function paginateTable(tableId, searchId, prevId, nextId, infoId, pageSize = 8) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    const body = table.querySelector("tbody");
+    const allRows = Array.from(body.querySelectorAll("tr"));
+    const searchEl = document.getElementById(searchId);
+    const prevBtn = document.getElementById(prevId);
+    const nextBtn = document.getElementById(nextId);
+    const info = document.getElementById(infoId);
+    let page = 1;
+    let filtered = [...allRows];
+
+    const render = () => {
+      const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
+      page = Math.min(page, pages);
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+      allRows.forEach((r, i) => { r.style.display = filtered.includes(r) && i >= 0 ? "" : "none"; });
+      filtered.forEach((r, i) => { r.style.display = i >= start && i < end ? "" : "none"; });
+      if (info) info.textContent = `Page ${page} / ${pages}`;
+      if (prevBtn) prevBtn.disabled = page <= 1;
+      if (nextBtn) nextBtn.disabled = page >= pages;
+    };
+    searchEl?.addEventListener("input", () => {
+      const q = searchEl.value.trim().toLowerCase();
+      filtered = allRows.filter((r) => r.textContent.toLowerCase().includes(q));
+      page = 1;
+      render();
+    });
+    prevBtn?.addEventListener("click", () => { page -= 1; render(); });
+    nextBtn?.addEventListener("click", () => { page += 1; render(); });
+    render();
+  }
+  paginateTable("usersTable", "usersSearch", "usersPrev", "usersNext", "usersPageInfo", 8);
+  paginateTable("campaignsTable", "campaignsSearch", "campaignsPrev", "campaignsNext", "campaignsPageInfo", 8);
+</script>
+{% endblock %}

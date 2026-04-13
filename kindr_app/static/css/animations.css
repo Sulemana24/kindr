@@ -1,0 +1,82 @@
+/* Page & layout motion (works with Bootstrap utilities loaded separately) */
+@keyframes kindr-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes kindr-nav-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes kindr-modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes kindr-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.anim-nav-in {
+  animation: kindr-nav-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.anim-page-in {
+  animation: kindr-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
+}
+
+.anim-footer-in {
+  animation: kindr-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+.kindr-page-main {
+  min-height: 20vh;
+}
+
+.modal-content.anim-modal-pop {
+  animation: kindr-modal-in 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.campaign-card.anim-card-reveal {
+  animation: kindr-card-in 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-nav-in,
+  .anim-page-in,
+  .anim-footer-in,
+  .modal-content.anim-modal-pop,
+  .campaign-card.anim-card-reveal {
+    animation: none !important;
+  }
+
+  .modal-content.anim-modal-pop {
+    transform: none !important;
+  }
+}

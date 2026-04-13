@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="description"
+      content="Kindr is a crowdfunding platform dedicated to supporting charitable causes and social impact projects."
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="{{ url_for('static', filename='Assets/logo.png') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <!-- Bootstrap Grid + Utilities only (avoids clashing .modal / .btn from full Bootstrap) -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap-grid.min.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap-utilities.min.css"
+      rel="stylesheet"
+      crossorigin="anonymous"
+    />
+    <title>{% block title %}Kindr — Kindness in Action{% endblock %}</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/animations.css') }}"
+    />
+  </head>
+  <body
+    class="{% block body_class %}{% endblock %}"
+    data-logout-url="{{ url_for('main.server_logout') }}"
+  >
+    <nav id="navbar" class="anim-nav-in">
+      <div class="nav-brand">
+        <img
+          src="{{ url_for('static', filename='Assets/logo.png') }}"
+          alt="Kindr logo"
+          class="logo-img"
+        />
+        <a href="{{ url_for('main.index') }}" class="nav-logo">kindr<span>.</span></a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('main.index') }}">Home</a></li>
+        <li><a href="{{ url_for('main.index') }}#campaigns">Explore</a></li>
+        <li><a href="{{ url_for('main.blog') }}">Blog</a></li>
+        <li><a href="{{ url_for('main.index') }}#how">How it works</a></li>
+        <li><a href="#">Stories</a></li>
+        <li><a href="{{ url_for('main.about') }}">About</a></li>
+      </ul>
+      <div class="nav-trailing">
+        <div class="nav-actions" id="navActions">
+          <div id="authButtons" class="nav-auth-btns" {% if current_user.is_authenticated %}hidden{% endif %}>
+            <button class="btn btn-ghost" onclick="openModal('signinModal')">
+              Sign in
+            </button>
+            <button class="btn btn-primary" type="button" onclick="openCampaignFlow()">
+              <i class="fa-solid fa-plus"></i>
+              Start a campaign
+            </button>
+          </div>
+        </div>
+        <div
+          class="user-profile"
+          id="userProfile"
+          {% if not current_user.is_authenticated %}hidden{% endif %}
+        >
+          <div class="profile-trigger" onclick="toggleProfileMenu()" aria-haspopup="true" aria-expanded="false">
+            <div class="avatar" id="userAvatar">
+              {% if current_user.is_authenticated %}
+              {{ (current_user.name or "U")[0].upper() }}
+              {% else %}
+              U
+              {% endif %}
+            </div>
+            <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+          </div>
+          <div class="profile-dropdown" id="profileDropdown" role="menu">
+            <p class="user-name" id="userName">
+              {% if current_user.is_authenticated %}
+              {{ current_user.name }}
+              {% else %}
+              User
+              {% endif %}
+            </p>
+            <a class="btn btn-ghost dashboard-nav-link" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+            <a
+              id="adminNavLink"
+              class="btn btn-ghost dashboard-nav-link"
+              href="{{ url_for('main.admin_dashboard') }}"
+              {% if not (current_user.is_authenticated and current_user.is_admin) %}hidden{% endif %}
+              >Admin</a
+            >
+            <button type="button" onclick="openCampaignFlow()">Start campaign</button>
+            <button type="button" onclick="logout()">Logout</button>
+          </div>
+        </div>
+        <button class="hamburger" id="hamburger" aria-label="Open menu" type="button">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="{{ url_for('main.index') }}">Home</a>
+      <a href="{{ url_for('main.index') }}#campaigns">Explore campaigns</a>
+      <a href="{{ url_for('main.blog') }}">Blog</a>
+      <a href="{{ url_for('main.index') }}#how">How it works</a>
+      <a href="#">Success stories</a>
+      <a href="{{ url_for('main.about') }}">About us</a>
+      <div id="mobileMenuGuest" class="mobile-menu-guest" {% if current_user.is_authenticated %}hidden{% endif %}>
+        <button class="btn btn-ghost" type="button" onclick="openModal('signinModal')">
+          Sign in
+        </button>
+        <button class="btn btn-primary" type="button" onclick="openCampaignFlow()">
+          <i class="fa-solid fa-plus"></i>
+          Start a campaign
+        </button>
+      </div>
+      <div id="mobileMenuAccount" class="mobile-menu-account" {% if not current_user.is_authenticated %}hidden{% endif %}>
+        <p class="mobile-menu-user" id="mobileMenuUserName">{{ current_user.name if current_user.is_authenticated else '' }}</p>
+        <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+        <a id="mobileMenuAdminLink" href="{{ url_for('main.admin_dashboard') }}" {% if not (current_user.is_authenticated and current_user.is_admin) %}hidden{% endif %}>Admin</a>
+        <button type="button" class="btn btn-primary" onclick="openCampaignFlow()">
+          <i class="fa-solid fa-plus"></i>
+          Start a campaign
+        </button>
+        <button type="button" class="btn btn-ghost" onclick="logout()">Log out</button>
+      </div>
+    </div>
+
+    <div id="toast" class="toast shadow" role="status" aria-live="polite"></div>
+    <div id="globalLoader" class="global-loader" aria-live="polite" aria-busy="true">
+      <div class="global-loader-card">
+        <span class="global-loader-spinner" aria-hidden="true"></span>
+        <span>Loading, please wait...</span>
+      </div>
+    </div>
+
+    <main class="kindr-page-main anim-page-in">{% block main %}{% endblock %}</main>
+
+    <footer class="anim-footer-in border-top border-secondary border-opacity-25">
+      <div class="container-xl px-3 py-4">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="foot-brand">
+            <img
+              src="{{ url_for('static', filename='Assets/logo.png') }}"
+              alt="Kindr logo"
+              class="logo-img"
+            />
+            <a href="{{ url_for('main.index') }}" class="nav-logo">kindr<span>.</span></a>
+          </div>
+          <p>
+            Connecting people who care with causes that matter. Every
+            contribution, big or small, creates ripples of change in the world.
+          </p>
+          <div class="footer-social">
+            <a href="https://x.com/bekindrgh" target="_blank" class="social-btn">
+              <i class="fa-brands fa-x-twitter"></i>
+            </a>
+            <a href="https://www.linkedin.com/bekindrgh" target="_blank" class="social-btn">
+              <i class="fa-brands fa-linkedin-in"></i>
+            </a>
+            <a href="https://www.facebook.com/bekindrgh" target="_blank" class="social-btn">
+              <i class="fa-brands fa-facebook-f"></i>
+            </a>
+            <a href="https://www.tiktok.com/bekindrgh" target="_blank" class="social-btn">
+              <i class="fa-brands fa-tiktok"></i>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="{{ url_for('main.index') }}#campaigns">Explore causes</a></li>
+            <li><a href="{{ url_for('main.index') }}#how">How it works</a></li>
+            <li><a href="{{ url_for('main.pricing') }}">Pricing</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="{{ url_for('main.about') }}">About Kindr</a></li>
+            <li><a href="{{ url_for('main.careers') }}">Careers</a></li>
+            <li><a href="{{ url_for('main.contact') }}">Contact us</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="{{ url_for('main.help_page') }}">Help center</a></li>
+            <li><a href="{{ url_for('main.trust') }}">Trust &amp; safety</a></li>
+            <li><a href="{{ url_for('main.faq') }}">Donor FAQ</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> Kindr. All rights reserved.</span>
+        <div class="footer-links">
+          <a href="{{ url_for('main.privacy') }}">Privacy policy</a>
+          <a href="{{ url_for('main.terms') }}">Terms of service</a>
+        </div>
+      </div>
+      </div>
+    </footer>
+
+    <!-- OTP (register / login / OAuth / generic) -->
+    <div class="modal" id="otpModal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('otpModal')">&times;</span>
+        <h2 id="otpModalTitle">Enter verification code</h2>
+        <p id="otpModalHint" class="modal-hint"></p>
+        <input type="hidden" id="otpPurpose" />
+        <label class="modal-label" for="otpEmail">Account email (for verification)</label>
+        <input type="email" id="otpEmail" class="modal-input" placeholder="your@email.com" readonly />
+        <input
+          type="text"
+          id="otpCode"
+          class="modal-input"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          placeholder="6-digit code"
+          maxlength="8"
+        />
+        <button type="button" class="btn btn-primary" onclick="submitOtp()">
+          Verify
+        </button>
+        <button
+          type="button"
+          id="otpResendBtn"
+          class="btn btn-ghost"
+          onclick="resendOtp()"
+        >
+          Resend code
+        </button>
+      </div>
+    </div>
+
+    <div class="modal" id="signinModal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('signinModal')">&times;</span>
+        <h2>Sign In</h2>
+        <input
+          type="text"
+          id="signinEmail"
+          placeholder="Email or phone (E.164, e.g. +233…)"
+          class="modal-input"
+          autocomplete="username"
+        />
+        <input
+          type="password"
+          id="signinPassword"
+          placeholder="Password"
+          class="modal-input"
+        />
+        <button type="button" class="btn btn-primary" onclick="submitSignin()">
+          Continue
+        </button>
+        <p class="auth-switch">
+          Forgot your password?
+          <a href="#" onclick="switchModal('signinModal', 'forgotPasswordModal'); return false;"
+            >Reset it</a
+          >
+        </p>
+        <div class="social-login">
+          <button type="button" class="social-login-btn google" onclick="goGoogle()">
+            Continue with Google
+          </button>
+        </div>
+        <p class="auth-switch">
+          Don’t have an account?
+          <a href="#" onclick="switchModal('signinModal', 'signupModal'); return false;"
+            >Sign up</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <div class="modal" id="forgotPasswordModal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('forgotPasswordModal')">&times;</span>
+        <h2>Reset Password</h2>
+        <input
+          type="text"
+          id="resetIdentifier"
+          placeholder="Email or phone"
+          class="modal-input"
+        />
+        <button type="button" class="btn btn-primary" onclick="requestPasswordResetCode()">
+          Send reset code
+        </button>
+        <input type="email" id="resetEmail" placeholder="Account email" class="modal-input" />
+        <input
+          type="text"
+          id="resetCode"
+          placeholder="Reset code"
+          class="modal-input"
+          inputmode="numeric"
+          maxlength="8"
+        />
+        <input
+          type="password"
+          id="resetNewPassword"
+          placeholder="New password (min 8 characters)"
+          class="modal-input"
+        />
+        <button type="button" class="btn btn-primary" onclick="submitPasswordReset()">
+          Change password
+        </button>
+      </div>
+    </div>
+
+    <div class="modal" id="signupModal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('signupModal')">&times;</span>
+        <h2>Create Account</h2>
+        <input type="text" id="signupName" placeholder="Full Name" class="modal-input" />
+        <input type="email" id="signupEmail" placeholder="Email" class="modal-input" />
+        <input
+          type="tel"
+          id="signupPhone"
+          placeholder="Phone (optional, E.164 e.g. +233...)"
+          class="modal-input"
+        />
+        <input
+          type="password"
+          id="signupPassword"
+          placeholder="Password (min 8 characters)"
+          class="modal-input"
+        />
+        <input
+          type="password"
+          id="signupPassword2"
+          placeholder="Confirm Password"
+          class="modal-input"
+        />
+        <button type="button" class="btn btn-primary" onclick="submitSignup()">
+          Sign Up
+        </button>
+        <div class="social-login">
+          <button type="button" class="social-login-btn google" onclick="goGoogle()">
+            Sign up with Google
+          </button>
+        </div>
+        <p class="auth-switch">
+          Already have an account?
+          <a href="#" onclick="switchModal('signupModal', 'signinModal'); return false;"
+            >Sign in</a
+          >
+        </p>
+      </div>
+    </div>
+
+    <div class="modal" id="reportModal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('reportModal')">&times;</span>
+        <h2>Report Campaign</h2>
+        <p id="reportCampaignTitle" style="font-size: 0.9rem; margin-bottom: 10px"></p>
+        <select class="modal-input">
+          <option>Fraud or scam</option>
+          <option>Inappropriate content</option>
+          <option>Misleading information</option>
+          <option>Other</option>
+        </select>
+        <textarea class="modal-input" placeholder="Explain the issue..."></textarea>
+        <button type="button" class="btn btn-primary">Submit Report</button>
+      </div>
+    </div>
+
+    <div class="modal" id="campaignModal">
+      <div class="modal-content campaign-modal-wide">
+        <span class="close" onclick="closeCampaignModal()">&times;</span>
+        <h2>Create Campaign</h2>
+        <div id="campaignGate">
+          <p class="modal-hint">
+            For your security, we send a one-time code to your email or phone before you
+            can register a campaign.
+          </p>
+          <button type="button" class="btn btn-primary" onclick="sendCampaignStepOtp()">
+            Send verification code
+          </button>
+        </div>
+        <div id="campaignOtpSection" style="display: none">
+          <label class="modal-label" for="campaignOtpInput">Security code</label>
+          <input
+            type="text"
+            id="campaignOtpInput"
+            class="modal-input"
+            inputmode="numeric"
+            maxlength="8"
+            placeholder="Enter the code"
+          />
+          <button type="button" class="btn btn-primary" onclick="verifyCampaignStepOtp()">
+            Verify &amp; continue
+          </button>
+        </div>
+        <div id="campaignFormSection" style="display: none">
+          <input
+            type="text"
+            id="campaignTitle"
+            placeholder="Campaign Title"
+            class="modal-input"
+          />
+          <label class="modal-label" for="campaignCategory">Category</label>
+          <select id="campaignCategory" class="modal-input" required>
+            <option value="" selected disabled>Select a category</option>
+            <option value="education">Education</option>
+            <option value="health">Health &amp; Medical</option>
+            <option value="environment">Environment</option>
+            <option value="community">Community</option>
+            <option value="arts">Arts &amp; Culture</option>
+            <option value="animals">Animals</option>
+            <option value="emergency">Emergency</option>
+          </select>
+          <input
+            type="number"
+            id="campaignGoal"
+            placeholder="Goal Amount (Ghc)"
+            class="modal-input"
+            min="1"
+            step="1"
+          />
+          <label class="modal-label" for="campaignStartDate">Campaign creation date</label>
+          <input type="date" id="campaignStartDate" class="modal-input" />
+          <label class="modal-label" for="campaignEndDate">Campaign completion date</label>
+          <input type="date" id="campaignEndDate" class="modal-input" />
+          <label class="modal-label" for="campaignImageFile">Campaign image (from your device)</label>
+          <input
+            type="file"
+            id="campaignImageFile"
+            class="modal-input"
+            accept="image/*"
+          />
+          <div id="campaignImagePreviewWrap" class="campaign-image-preview-wrap" hidden>
+            <span class="campaign-image-preview-label">Preview</span>
+            <img id="campaignImagePreview" class="campaign-image-preview" alt="Campaign preview" />
+          </div>
+          <input type="url" id="campaignImage" placeholder="Or paste an image URL" class="modal-input" />
+          <textarea
+            id="campaignDesc"
+            placeholder="Describe your campaign..."
+            class="modal-input"
+          ></textarea>
+          <button type="button" class="btn btn-primary" onclick="submitCampaignForm()">
+            Create Campaign
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="donateModal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('donateModal')">&times;</span>
+        <h2>Support this campaign</h2>
+        <p
+          id="donateCampaignTitle"
+          style="font-size: 0.9rem; color: var(--muted); margin-bottom: 12px"
+        ></p>
+        <input type="hidden" id="donateCampaignId" value="" />
+        <label class="modal-label" for="donateEmail">Email (for receipt)</label>
+        <input
+          type="email"
+          id="donateEmail"
+          class="modal-input"
+          placeholder="you@example.com"
+          autocomplete="email"
+        />
+        <div class="donate-quick-amt">
+          <button type="button" class="btn btn-ghost" onclick="setAmount(10)">Ghc10</button>
+          <button type="button" class="btn btn-ghost" onclick="setAmount(25)">Ghc25</button>
+          <button type="button" class="btn btn-ghost" onclick="setAmount(50)">Ghc50</button>
+        </div>
+        <input
+          type="number"
+          placeholder="Enter amount (Ghc)"
+          class="modal-input"
+          id="donationAmount"
+          min="1"
+          step="1"
+        />
+        <button type="button" class="btn btn-primary" onclick="submitDonation()">
+          Donate now
+        </button>
+        <p class="modal-hint" style="margin-top: 10px">
+          You will be redirected to Paystack to complete payment securely.
+        </p>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  </body>
+</html>

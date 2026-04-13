@@ -1,0 +1,128 @@
+{% extends "blog_base.html" %}
+{% macro article_excerpt(text, max_chars) %}
+{%- set t = (text or '') | trim -%}
+{%- if t | length <= max_chars -%}
+{{- t -}}
+{%- else -%}
+{%- set snippet = t[:max_chars] -%}
+{%- set cut = snippet.rsplit(' ', 1)[0] -%}
+{{- cut -}}…
+{%- endif -%}
+{% endmacro %}
+{% block blog_title %}Stories & updates — Kindr{% endblock %}
+{% block blog_main %}
+<main class="blog-ed-main">
+  {% if post_status == "created" %}
+  <div class="blog-ed-banner blog-ed-banner--ok" role="status">Your story is live. Thank you for sharing with the community.</div>
+  {% elif post_status == "missing" %}
+  <div class="blog-ed-banner blog-ed-banner--err" role="alert">Please add a title and body before publishing.</div>
+  {% elif post_status == "bad_price" %}
+  <div class="blog-ed-banner blog-ed-banner--err" role="alert">Enter a valid price for marketplace posts.</div>
+  {% endif %}
+
+  <header class="blog-ed-pagehead">
+    <h1 class="blog-ed-pagehead-title">Stories &amp; updates</h1>
+    <p class="blog-ed-pagehead-desc">
+      Real people, real impact—news from Kindr and stories from our community. Read the latest, or share your own.
+    </p>
+  </header>
+
+  {% if posts %}
+  {% set featured = posts[0] %}
+  {% set rest = posts[1:] %}
+
+  <article class="blog-ed-featured" aria-labelledby="featured-title">
+    <a href="{{ url_for('main.blog_post', post_id=featured.id) }}" class="blog-ed-featured-link" aria-hidden="true" tabindex="-1">
+      <div class="blog-ed-featured-media">
+        {% if featured.image_url %}
+        <img src="{{ featured.image_url }}" alt="" loading="eager" />
+        {% else %}
+        <div class="blog-ed-featured-placeholder" aria-hidden="true"></div>
+        {% endif %}
+      </div>
+    </a>
+    <div class="blog-ed-featured-body">
+      <span class="blog-ed-cat blog-ed-cat--{{ featured.post_type }}">{{ featured.post_type | replace('_', ' ') | title }}</span>
+      <h2 id="featured-title" class="blog-ed-featured-title">
+        <a href="{{ url_for('main.blog_post', post_id=featured.id) }}">{{ featured.title }}</a>
+      </h2>
+      <p class="blog-ed-featured-excerpt">{{ article_excerpt(featured.content, 220) }}</p>
+      <div class="blog-ed-meta">
+        <span>{% if featured.author %}{{ featured.author.name }}{% else %}Kindr community{% endif %}</span>
+        <span class="blog-ed-meta-dot" aria-hidden="true">·</span>
+        <time datetime="{{ featured.created_at.isoformat() if featured.created_at else '' }}">{{ featured.created_at.strftime('%b %d, %Y') if featured.created_at else '' }}</time>
+        {% if featured.post_type == 'marketplace' and featured.price is not none %}
+        <span class="blog-ed-meta-dot" aria-hidden="true">·</span>
+        <span class="blog-ed-price">Ghc{{ '{:,.2f}'.format(featured.price) }}</span>
+        {% endif %}
+      </div>
+      <a href="{{ url_for('main.blog_post', post_id=featured.id) }}" class="blog-ed-readmore">Read full story <span aria-hidden="true">→</span></a>
+    </div>
+  </article>
+
+  {% if rest %}
+  <h2 class="blog-ed-section-label">More stories</h2>
+  <div class="blog-ed-grid">
+    {% for p in rest %}
+    <article class="blog-ed-card">
+      <a href="{{ url_for('main.blog_post', post_id=p.id) }}" class="blog-ed-card-media">
+        {% if p.image_url %}
+        <img src="{{ p.image_url }}" alt="" loading="lazy" />
+        {% else %}
+        <div class="blog-ed-card-placeholder" aria-hidden="true"></div>
+        {% endif %}
+      </a>
+      <div class="blog-ed-card-body">
+        <span class="blog-ed-cat blog-ed-cat--{{ p.post_type }}">{{ p.post_type | replace('_', ' ') | title }}</span>
+        <h3 class="blog-ed-card-title">
+          <a href="{{ url_for('main.blog_post', post_id=p.id) }}">{{ p.title }}</a>
+        </h3>
+        <p class="blog-ed-card-excerpt">{{ article_excerpt(p.content, 140) }}</p>
+        <div class="blog-ed-meta blog-ed-meta--compact">
+          <time datetime="{{ p.created_at.isoformat() if p.created_at else '' }}">{{ p.created_at.strftime('%b %d, %Y') if p.created_at else '' }}</time>
+        </div>
+        <a href="{{ url_for('main.blog_post', post_id=p.id) }}" class="blog-ed-card-cta">Read article</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div class="blog-ed-empty">
+    <h2 class="blog-ed-empty-title">No posts yet</h2>
+    <p>When your community publishes stories, news, or marketplace listings, they will appear here.</p>
+    {% if current_user.is_authenticated %}
+    <button type="button" class="blog-ed-btn" onclick="openModal('blogPostModal')">Write the first post</button>
+    {% endif %}
+  </div>
+  {% endif %}
+</main>
+
+{% if current_user.is_authenticated %}
+<div class="modal" id="blogPostModal">
+  <div class="modal-content blog-post-modal">
+    <span class="close" onclick="closeModal('blogPostModal')">&times;</span>
+    <h2>Publish a story</h2>
+    <p class="modal-hint">Share an update, a personal story, or a marketplace listing. Add a strong title and cover image when you can.</p>
+    <form method="post" action="{{ url_for('main.blog_create') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <label class="modal-label" for="bp-title">Title</label>
+      <input id="bp-title" class="modal-input" type="text" name="title" placeholder="Headline" required />
+      <label class="modal-label" for="bp-type">Type</label>
+      <select id="bp-type" class="modal-input" name="post_type" aria-label="Post type">
+        <option value="story">Story</option>
+        <option value="news">News</option>
+        <option value="marketplace">Marketplace</option>
+      </select>
+      <input class="modal-input" type="number" min="0" step="0.01" name="price" placeholder="Price (marketplace only)" />
+      <label class="modal-label" for="bp-img">Cover image URL (recommended)</label>
+      <input id="bp-img" class="modal-input" type="url" name="image_url" placeholder="https://…" />
+      <label class="modal-label" for="bp-body">Story</label>
+      <textarea id="bp-body" class="modal-input" name="content" placeholder="Tell your story…" required rows="8"></textarea>
+      <button class="btn btn-primary" type="submit">Publish</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

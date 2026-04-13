@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Your dashboard — Kindr{% endblock %}
+{% block main %}
+<section class="dashboard-wrap">
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">Hi, {{ current_user.name }}</h1>
+    <p class="dashboard-email">{{ current_user.email }}</p>
+    <div class="dashboard-actions">
+      <a class="btn btn-ghost" href="{{ url_for('main.dashboard_export') }}">Export campaigns</a>
+      <a class="btn btn-primary" href="{{ url_for('main.index') }}">Back to home</a>
+      <button type="button" class="btn btn-ghost" onclick="openCampaignFlow()">
+        Start a campaign
+      </button>
+    </div>
+  </div>
+
+  {% if withdraw_status == "requested" %}
+  <div class="dashboard-alert">
+    <small>Withdrawal request submitted. A {{ withdraw_fee_percent }}% platform fee is applied.</small>
+  </div>
+  {% elif withdraw_status == "already_requested" %}
+  <div class="dashboard-alert">
+    <small>Withdrawal has already been requested for this campaign.</small>
+  </div>
+  {% elif withdraw_status == "not_eligible" %}
+  <div class="dashboard-alert">
+    <small>Withdrawal is available only when goal is reached or completion date is up.</small>
+  </div>
+  {% elif withdraw_status == "not_found" %}
+  <div class="dashboard-alert">
+    <small>Campaign not found for withdrawal request.</small>
+  </div>
+  {% elif withdraw_status == "none" %}
+  <div class="dashboard-alert">
+    <small>No donations available yet to withdraw.</small>
+  </div>
+  {% endif %}
+
+  {% if withdraw_demo_bypass %}
+  <div class="dashboard-alert dashboard-alert--demo">
+    <small><strong>Demo withdrawal</strong> — your account can submit a test request even before the goal is met. If the campaign has no donations yet, a sample amount (Ghc100 gross) is used so you can see the admin queue and email flow.</small>
+  </div>
+  {% endif %}
+
+  <div class="stats-grid">
+    <article class="stat-card">
+      <small>Total campaigns</small>
+      <h3>{{ total_campaigns }}</h3>
+    </article>
+    <article class="stat-card">
+      <small>Campaign views</small>
+      <h3>{{ total_views }}</h3>
+    </article>
+    <article class="stat-card">
+      <small>Total raised</small>
+      <h3>Ghc{{ "{:,.2f}".format(total_raised or 0) }}</h3>
+    </article>
+  </div>
+
+  <div class="dashboard-section">
+    <h2 class="dashboard-h2">Your campaigns</h2>
+    {% if campaigns %}
+    <div class="dashboard-campaign-list">
+      {% for c in campaigns %}
+      <article class="dashboard-campaign-card" data-campaign-id="{{ c.id }}">
+        <header class="d-cc-head">
+          <h3 class="d-cc-title">{{ c.title }}</h3>
+          {% set st = (c.status or "pending_review") %}
+          <span class="campaign-status-badge status-{{ st }}">
+            {% if st == "pending_review" %}
+            Pending review
+            {% elif st == "accepted" %}
+            Accepted
+            {% elif st == "flagged" %}
+            Flagged
+            {% else %}
+            {{ st.replace("_", " ").title() }}
+            {% endif %}
+          </span>
+        </header>
+        <p class="d-cc-category">{{ kindr_category_label(c.category) }}</p>
+        <div class="d-cc-dates">
+          {% if c.start_date %}<span>Start {{ c.start_date.strftime("%d %b %Y") }}</span>{% endif %}
+          {% if c.end_date %}<span>Ends {{ c.end_date.strftime("%d %b %Y") }}</span>{% endif %}
+        </div>
+
+        <div class="d-cc-stats">
+          <div class="d-cc-stat">
+            <span class="d-cc-stat-label">Raised</span>
+            <span class="d-cc-stat-value dashboard-raised">Ghc{{ "{:,.0f}".format(c.raised_amount or 0) }}</span>
+          </div>
+          <div class="d-cc-stat">
+            <span class="d-cc-stat-label">Goal</span>
+            <span class="d-cc-stat-value dashboard-goal">Ghc{{ "{:,.0f}".format(c.goal_amount) }}</span>
+          </div>
+          <div class="d-cc-stat">
+            <span class="d-cc-stat-label">Donors</span>
+            <span class="d-cc-stat-value dashboard-donors">{{ c.donor_count or 0 }}</span>
+          </div>
+          <div class="d-cc-stat d-cc-stat--net">
+            <span class="d-cc-stat-label">Net (after 7% fee)</span>
+            {% set gross = (c.raised_amount or 0) %}
+            {% set fee = gross * 0.07 %}
+            {% set net = gross - fee %}
+            <span class="d-cc-stat-value d-cc-net"><strong>Ghc{{ "{:,.2f}".format(net if net > 0 else 0) }}</strong></span>
+          </div>
+        </div>
+
+        <div class="d-cc-progress progress-wrap">
+          {% set raised = (c.raised_amount or 0) %}
+          {% set goal = (c.goal_amount or 0) %}
+          {% set pct = (0 if goal <= 0 else ((raised / goal) * 100)) %}
+          {% if pct < 0 %}{% set pct = 0 %}{% endif %}
+          {% if pct > 100 %}{% set pct = 100 %}{% endif %}
+          <div class="progress-bar-bg">
+            <div
+              class="progress-bar-fill"
+              style="width: 0%"
+              data-width="{{ "%.0f"|format(pct) }}%"
+            ></div>
+          </div>
+          <div class="progress-meta">
+            <span class="progress-raised dashboard-progress-raised">Ghc{{ "{:,.0f}".format(raised) }}</span>
+            <span class="progress-pct dashboard-progress-pct">{{ "%.0f"|format(pct) }}%</span>
+          </div>
+        </div>
+
+        <div class="d-cc-actions">
+          {% set can_withdraw = withdraw_demo_bypass or ((c.raised_amount or 0) >= (c.goal_amount or 0)) or (c.end_date and c.end_date <= now_naive) %}
+          {% set wr = wr_by_campaign.get(c.id) %}
+          {% set wr_st = (wr.status or '') if wr else '' %}
+
+          <div class="d-cc-actions-withdraw">
+            {% if wr_st == 'pending' or (not wr and c.withdrawal_requested_at) %}
+            <button type="button" class="btn btn-ghost d-cc-btn-full" disabled>Withdrawal pending review</button>
+            {% elif wr_st == 'completed' %}
+            <button type="button" class="btn btn-ghost d-cc-btn-full" disabled>Payout completed</button>
+            {% elif wr_st == 'rejected' and can_withdraw %}
+            <form method="post" action="{{ url_for('main.dashboard_withdraw', campaign_id=c.id) }}" class="d-cc-form">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-primary d-cc-btn-full">
+                <i class="fa-solid fa-money-bill-transfer" aria-hidden="true"></i>
+                Request withdrawal
+              </button>
+            </form>
+            {% elif can_withdraw %}
+            <form method="post" action="{{ url_for('main.dashboard_withdraw', campaign_id=c.id) }}" class="d-cc-form">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-primary d-cc-btn-full">
+                <i class="fa-solid fa-money-bill-transfer" aria-hidden="true"></i>
+                Request withdrawal
+              </button>
+            </form>
+            {% else %}
+            <button type="button" class="btn btn-ghost d-cc-btn-full" disabled>Withdraw locked</button>
+            {% endif %}
+          </div>
+
+          <div class="d-cc-actions-row">
+            <button
+              type="button"
+              class="btn btn-primary dashboard-donate d-cc-icon-btn"
+              data-cid="{{ c.id }}"
+              data-title="{{ c.title|urlencode }}"
+            >
+              <i class="fa-solid fa-heart" aria-hidden="true"></i>
+              <span>Donate</span>
+            </button>
+            <button
+              type="button"
+              class="btn btn-ghost dashboard-share d-cc-icon-btn"
+              data-title="{{ c.title|urlencode }}"
+            >
+              <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
+              <span>Share</span>
+            </button>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="dashboard-empty">
+      You have not registered a campaign yet. Go to the home page and use
+      <strong>Start a campaign</strong> after you verify the security code.
+    </p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
